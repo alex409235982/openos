@@ -92,8 +92,7 @@ export default function About() {
       <div className="card" style={{ marginBottom: 24, textAlign: "center" }}>
         <h1 className="h1">About OPENOS</h1>
         <p className="p" style={{ maxWidth: 600, margin: "0 auto" }}>
-          Your gateway to exploring Linux distributions safely from your browser. 
-          No installation, no risk, just pure learning.
+          Your gateway to exploring Linux distributions safely from your browser. No installation, no risk, just pure learning.
         </p>
       </div>
 
@@ -173,8 +172,7 @@ export default function About() {
       <div className="card" style={{ marginBottom: 32 }}>
         <h2 className="h2">What is OPENOS?</h2>
         <p className="p">
-          OPENOS is a browser-based platform that lets you experience different Linux distributions 
-          without the commitment of installation. Think of it as a test drive for operating systems.
+          OPENOS is a browser-based platform that lets you experience different Linux distributions without the commitment of installation. Think of it as a test drive for operating systems.
         </p>
         
         <div style={{ 
