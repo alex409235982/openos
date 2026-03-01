@@ -65,7 +65,7 @@ export default function About() {
 
   const categories = [
     { id: "all", label: "All Distributions" },
-    { id: "beginner", label: "Easy / Beginner", emoji: "🌱" },
+    { id: "beginner", label: "Beginner", emoji: "🌱" },
     { id: "intermediate", label: "Intermediate", emoji: "⚙️" },
     { id: "advanced", label: "Advanced", emoji: "🚀" },
     { id: "gaming", label: "Gaming Optimized", emoji: "🎮" },
