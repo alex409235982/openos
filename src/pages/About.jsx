@@ -11,55 +11,55 @@ export default function About() {
       name: "Linux Mint",
       logo: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Linux_Mint_logo_without_wordmark.svg",
       category: "beginner",
-      description: "Elegant, easy to use, and comfortable for newcomers"
+      description: "Elegant, easy to use, and comfortable for newcomers."
     },
     {
       name: "Ubuntu",
       logo: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg",
       category: "beginner",
-      description: "Popular, well-supported, great for everyday use"
+      description: "Popular, well-supported, great for everyday use."
     },
     {
       name: "Fedora",
       logo: "https://upload.wikimedia.org/wikipedia/commons/4/41/Fedora_icon_%282021%29.svg",
       category: "beginner",
-      description: "Cutting-edge features with stability"
+      description: "Cutting-edge features with stability."
     },
     {
       name: "Arch Linux",
       logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Arch_Linux_%22Crystal%22_icon.svg/3840px-Arch_Linux_%22Crystal%22_icon.svg.png",
       category: "advanced",
-      description: "DIY approach, complete control over your system"
+      description: "DIY approach, complete control over your system."
     },
     {
       name: "CachyOS",
       logo: "https://upload.wikimedia.org/wikipedia/commons/b/b8/CachyOS_Logo.svg",
       category: "gaming",
-      description: "Optimized for performance and gaming"
+      description: "Optimized for performance and gaming."
     },
     {
       name: "Kali Linux",
       logo: "https://upload.wikimedia.org/wikipedia/commons/2/2b/Kali-dragon-icon.svg",
       category: "security",
-      description: "Penetration testing and security auditing"
+      description: "Penetration testing and security auditing."
     },
     {
       name: "Manjaro",
       logo: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Manjaro-logo.svg",
       category: "intermediate",
-      description: "Arch-based with user-friendly approach"
+      description: "Arch-based with user-friendly approach."
     },
     {
       name: "Debian",
       logo: "https://upload.wikimedia.org/wikipedia/commons/6/66/Openlogo-debianV2.svg",
       category: "advanced",
-      description: "Universal operating system, rock-solid stability"
+      description: "Universal operating system, rock-solid stability."
     },
     {
       name: "KDE Neon",
       logo: "https://upload.wikimedia.org/wikipedia/commons/f/f7/Neon-logo.svg",
       category: "intermediate",
-      description: "Latest KDE software on a stable base"
+      description: "Latest KDE software on a stable base."
     }
   ];
 
@@ -186,19 +186,19 @@ export default function About() {
           <div style={{ background: "rgba(31, 111, 235, 0.1)", padding: 16, borderRadius: 10 }}>
             <div style={{ fontSize: 28, marginBottom: 8 }}>🚀</div>
             <h3 style={{ margin: "0 0 8px 0", fontSize: 18 }}>Instant Access</h3>
-            <p className="p muted" style={{ margin: 0, fontSize: 14 }}>No downloads, no VMs, no dual-boot setup</p>
+            <p className="p muted" style={{ margin: 0, fontSize: 14 }}>No downloads, no VMs, no dual-boot setup.</p>
           </div>
           
           <div style={{ background: "rgba(139, 255, 179, 0.1)", padding: 16, borderRadius: 10 }}>
             <div style={{ fontSize: 28, marginBottom: 8 }}>🛡️</div>
             <h3 style={{ margin: "0 0 8px 0", fontSize: 18 }}>Safe Testing</h3>
-            <p className="p muted" style={{ margin: 0, fontSize: 14 }}>Your real system stays untouched</p>
+            <p className="p muted" style={{ margin: 0, fontSize: 14 }}>Your real system stays untouched.</p>
           </div>
           
           <div style={{ background: "rgba(255, 139, 139, 0.1)", padding: 16, borderRadius: 10 }}>
             <div style={{ fontSize: 28, marginBottom: 8 }}>📚</div>
             <h3 style={{ margin: "0 0 8px 0", fontSize: 18 }}>Learn by Doing</h3>
-            <p className="p muted" style={{ margin: 0, fontSize: 14 }}>Explore real Linux environments hands-on</p>
+            <p className="p muted" style={{ margin: 0, fontSize: 14 }}>Explore real Linux environments hands-on.</p>
           </div>
         </div>
       </div>
@@ -293,7 +293,7 @@ export default function About() {
 
         {filteredDistros.length === 0 && (
           <div style={{ textAlign: "center", padding: 40, color: "#aeb9ca" }}>
-            No distributions found matching your criteria
+            No distributions found matching your criteria.
           </div>
         )}
       </div>
@@ -314,7 +314,7 @@ export default function About() {
             }}>1</div>
             <div>
               <h3 style={{ margin: "0 0 4px 0", fontSize: 18 }}>Choose a Distribution</h3>
-              <p className="p muted">Browse our collection and pick the Linux distro you want to explore</p>
+              <p className="p muted">Browse our collection and pick the Linux distro you want to explore.</p>
             </div>
           </div>
           
@@ -331,7 +331,7 @@ export default function About() {
             }}>2</div>
             <div>
               <h3 style={{ margin: "0 0 4px 0", fontSize: 18 }}>Launch in Browser</h3>
-              <p className="p muted">Click launch and we'll spin up a virtual machine instantly</p>
+              <p className="p muted">Click launch and we'll spin up a virtual machine instantly.</p>
             </div>
           </div>
           
@@ -348,7 +348,7 @@ export default function About() {
             }}>3</div>
             <div>
               <h3 style={{ margin: "0 0 4px 0", fontSize: 18 }}>Explore Freely</h3>
-              <p className="p muted">Use the desktop, install software, test workflows. There is no limits, and more importantly, no risk</p>
+              <p className="p muted">Use the desktop, install software, test workflows. There is no limits, and more importantly, no risk.</p>
             </div>
           </div>
         </div>
