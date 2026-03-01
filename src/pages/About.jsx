@@ -272,9 +272,6 @@ export default function About() {
                   height: 48,
                   objectFit: "contain"
                 }}
-                onError={(e) => {
-                  e.target.src = "https://upload.wikimedia.org/wikipedia/commons/3/3a/Tux.svg";
-                }}
               />
               <div style={{ flex: 1 }}>
                 <h3 style={{ margin: "0 0 4px 0", fontSize: 18 }}>{distro.name}</h3>
