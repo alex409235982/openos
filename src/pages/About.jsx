@@ -19,7 +19,7 @@ export default function About() {
       <div className="card" style={{ marginBottom: 24, textAlign: "center" }}>
         <h1 className="h1">About OPENOS</h1>
         <p className="p" style={{ maxWidth: 600, margin: "0 auto" }}>
-          Your gateway to exploring Linux distributions safely from your browser. No installation, no risk, just pure learning.
+          Your gateway to exploring Linux distributions safely from your browser. There is no installation or risk, just pure learning.
         </p>
       </div>
 
@@ -111,7 +111,7 @@ export default function About() {
           <div style={{ background: "rgba(31, 111, 235, 0.1)", padding: 16, borderRadius: 10 }}>
             <div style={{ fontSize: 28, marginBottom: 8 }}>🚀</div>
             <h3 style={{ margin: "0 0 8px 0", fontSize: 18 }}>Instant Access</h3>
-            <p className="p muted" style={{ margin: 0, fontSize: 14 }}>No downloads, no VMs, no dual-boot setup.</p>
+            <p className="p muted" style={{ margin: 0, fontSize: 14 }}>No downloads and no dual-booting needed.</p>
           </div>
           
           <div style={{ background: "rgba(139, 255, 179, 0.1)", padding: 16, borderRadius: 10 }}>
@@ -138,15 +138,15 @@ export default function About() {
         }}>
           <div>
             <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>🔓 Freedom & Open Source</h3>
-            <p className="p muted" style={{ margin: 0 }}>Linux gives you complete control over your system. View, modify, and share the code however you want.</p>
+            <p className="p muted" style={{ margin: 0 }}>Linux gives you complete control over your system. You can view, modify, and share the code however you want.</p>
           </div>
           <div>
             <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>🛡️ Security & Privacy</h3>
-            <p className="p muted" style={{ margin: 0 }}>Better permission systems, fewer viruses, and no telemetry spying on your activities.</p>
+            <p className="p muted" style={{ margin: 0 }}>There are better permission systems and zero telemetry spying on your activities.</p>
           </div>
           <div>
             <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>💸 Completely Free</h3>
-            <p className="p muted" style={{ margin: 0 }}>No license fees, no subscriptions, no "pro" versions. Linux is free for everyone, forever.</p>
+            <p className="p muted" style={{ margin: 0 }}>No license fees and no subscriptions. Linux is free for everyone, forever.</p>
           </div>
           <div>
             <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>🔄 Revive Old Hardware</h3>
@@ -154,7 +154,7 @@ export default function About() {
           </div>
           <div>
             <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>🎮 Gaming Ready</h3>
-            <p className="p muted" style={{ margin: 0 }}>You can use tools like Proton to play thousands of Windows games on Linux.</p>
+            <p className="p muted" style={{ margin: 0 }}>You can use tools like Proton to play thousands of Windows games on Linux. Start up an emulator while you are at it!</p>
           </div>
           <div>
             <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>🌍 Community Driven</h3>
@@ -226,7 +226,7 @@ export default function About() {
       }}>
         <h2 className="h2" style={{ marginBottom: 16 }}>Ready to get started?</h2>
         <p className="p" style={{ maxWidth: 500, margin: "0 auto 20px auto" }}>
-          Head over to our <strong>distributions page</strong> and try any Linux distro instantly in your browser. No installation, no risk.
+          Head over to our <strong>distributions page</strong> and try any Linux distro instantly in your browser.
         </p>
         <Link to="/distros" className="btn" style={{ fontSize: 18, padding: "12px 28px" }}>
           Browse Distributions
