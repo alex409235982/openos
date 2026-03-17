@@ -13,40 +13,23 @@ html, body, #root { height: 100%; }
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: #0b0f14;
+  background-image: url('https://c02.purpledshub.com/uploads/sites/41/2021/08/GettyImages-484576000-c-bc46733.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   overflow: hidden;
 }
 
-.bg::before,
-.bg::after {
+.bg::before {
   content: "";
   position: absolute;
-  inset: -40%;
-  background: radial-gradient(circle at 30% 30%, rgba(31,111,235,0.22), rgba(0,0,0,0) 55%),
-              radial-gradient(circle at 70% 60%, rgba(0,200,160,0.14), rgba(0,0,0,0) 58%),
-              radial-gradient(circle at 40% 80%, rgba(255,255,255,0.06), rgba(0,0,0,0) 60%);
-  filter: blur(10px);
-  transform: translate3d(0,0,0);
-  animation: floatA 18s ease-in-out infinite alternate;
+  inset: 0;
+  background: rgba(11, 15, 20, 0.75);
+  backdrop-filter: blur(4px);
 }
 
 .bg::after {
-  inset: -50%;
-  opacity: 0.75;
-  filter: blur(18px);
-  animation: floatB 26s ease-in-out infinite alternate;
-}
-
-@keyframes floatA {
-  0% { transform: translate(-3%, -2%) scale(1.05); }
-  50% { transform: translate(2%, 3%) scale(1.08); }
-  100% { transform: translate(4%, -1%) scale(1.06); }
-}
-
-@keyframes floatB {
-  0% { transform: translate(4%, 3%) scale(1.10); }
-  50% { transform: translate(-2%, -3%) scale(1.06); }
-  100% { transform: translate(-4%, 2%) scale(1.12); }
+  display: none;
 }
 
 .appShell {
@@ -66,7 +49,7 @@ html, body, #root { height: 100%; }
 }
 
 .card {
-  background: rgba(17, 24, 38, 0.78);
+  background: rgba(17, 24, 38, 0.85);
   border: 1px solid rgba(35, 48, 68, 0.9);
   border-radius: 14px;
   padding: 18px;
@@ -101,7 +84,7 @@ html, body, #root { height: 100%; }
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid #2a3a55;
-  background: rgba(11, 18, 32, 0.78);
+  background: rgba(11, 18, 32, 0.85);
   color: #e8e8e8;
 }
 
