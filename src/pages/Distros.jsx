@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import { apiRequest } from '../api';
 
 export default function Distros() {
@@ -10,6 +12,8 @@ export default function Distros() {
   const [glossaryTerms, setGlossaryTerms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [glossaryLoading, setGlossaryLoading] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDistros = async () => {
@@ -47,6 +51,17 @@ export default function Distros() {
 
     fetchGlossary();
   }, [showGlossary]);
+
+  useEffect(() => {
+    if (selectedDistro) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [selectedDistro]);
 
   const categories = [
     { id: "all", label: "All Distributions" },
@@ -110,7 +125,7 @@ export default function Distros() {
             }}>
               {distributions.map((distro) => (
                 <div
-                  key={distro._id || distro.name}
+                  key={distro._id}
                   onClick={() => setSelectedDistro(distro)}
                   style={{
                     background: 'rgba(17, 24, 38, 0.6)',
@@ -170,48 +185,103 @@ export default function Distros() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0, 0, 0, 0.8)',
-          backdropFilter: 'blur(8px)',
+          background: 'rgba(0, 0, 0, 0.95)',
+          backdropFilter: 'blur(12px)',
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'center',
           zIndex: 1000,
-          padding: 20
+          overflowY: 'auto'
         }} onClick={() => setSelectedDistro(null)}>
           <div style={{
-            maxWidth: 800,
             width: '100%',
-            maxHeight: '90vh',
-            overflowY: 'auto',
+            minHeight: '100vh',
             background: '#0f1620',
-            border: '1px solid #1f6feb',
-            borderRadius: 16,
-            padding: 24
+            padding: '32px 48px'
           }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+            <div style={{ 
+              maxWidth: 1400, 
+              margin: '0 auto',
+              position: 'relative'
+            }}>
+              <button 
+                onClick={() => setSelectedDistro(null)} 
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid #2a3a55',
+                  borderRadius: '50%',
+                  width: 40,
+                  height: 40,
+                  fontSize: 24,
+                  cursor: 'pointer',
+                  color: '#aeb9ca',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s',
+                  zIndex: 10
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.color = '#ffffff';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.color = '#aeb9ca';
+                }}
+              >
+                ×
+              </button>
+
+              <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 24, marginTop: 8 }}>
                 <img src={selectedDistro.logo} alt={selectedDistro.name} style={{ width: 48, height: 48, objectFit: 'contain' }} />
-                <h2 style={{ margin: 0 }}>{selectedDistro.name}</h2>
+                <div>
+                  <h1 style={{ margin: 0, fontSize: 28, color: '#ffffff' }}>{selectedDistro.name}</h1>
+                  <div style={{ marginTop: 6 }}>
+                    <span className="badge" style={{ fontSize: 12, padding: '4px 10px' }}>
+                      {categories.find(c => c.id === selectedDistro.category)?.label.split(' / ')[0] || selectedDistro.category}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <button onClick={() => setSelectedDistro(null)} style={{ background: 'none', border: 'none', color: '#aeb9ca', fontSize: 28, cursor: 'pointer' }}>×</button>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 40, alignItems: 'start' }}>
+                <div>
+                  <img 
+                    src={selectedDistro.screenshot} 
+                    alt={`${selectedDistro.name} screenshot`} 
+                    style={{ 
+                      width: '100%', 
+                      borderRadius: 20, 
+                      marginBottom: 32, 
+                      border: '1px solid #2a3a55',
+                      boxShadow: '0 12px 32px rgba(0,0,0,0.4)'
+                    }} 
+                  />
+                  <div>
+                    <h2 style={{ fontSize: 24, marginBottom: 16, color: '#ffffff' }}>About {selectedDistro.name}</h2>
+                    <p className="p" style={{ fontSize: 15, lineHeight: 1.7 }}>{selectedDistro.longDescription}</p>
+                  </div>
+                </div>
+                
+                <div></div>
+              </div>
             </div>
-            
-            <div style={{ marginBottom: 16 }}>
-              <span className="badge" style={{ fontSize: 13 }}>
-                {categories.find(c => c.id === selectedDistro.category)?.label.split(' / ')[0] || selectedDistro.category}
-              </span>
-            </div>
-            
-            <img src={selectedDistro.screenshot} alt={`${selectedDistro.name} screenshot`} style={{ width: '100%', borderRadius: 12, marginBottom: 20, border: '1px solid #2a3a55' }} />
-            
-            <p className="p" style={{ fontSize: 16, lineHeight: 1.6 }}>{selectedDistro.longDescription}</p>
           </div>
         </div>
       )}
 
       <div className="card" style={{ marginTop: 32 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h2 className="h2" style={{ margin: 0 }}>Linux Glossary</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <h2 className="h2" style={{ margin: 0 }}>Linux Glossary</h2>
+            <p className="p muted" style={{ margin: '4px 0 0 0', fontSize: 13 }}>
+            Click "Show Glossary" to learn new definitions regarding operating systems and Linux.
+            </p>
+          </div>
           <button 
             onClick={() => setShowGlossary(!showGlossary)} 
             className="btn secondary"
