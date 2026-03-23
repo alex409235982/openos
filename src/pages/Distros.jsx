@@ -72,6 +72,16 @@ export default function Distros() {
     { id: "security", label: "Penetration Testing", emoji: "🔐" }
   ];
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div className="container">
       <div className="card" style={{ marginBottom: 24, textAlign: 'center' }}>
@@ -92,13 +102,22 @@ export default function Distros() {
             style={{ marginBottom: 16 }}
           />
           
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div style={{ 
+            display: 'flex', 
+            gap: 8, 
+            flexWrap: 'wrap',
+            ...(isMobile && { justifyContent: 'center' })
+          }}>
             {categories.map(cat => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`btn ${selectedCategory === cat.id ? '' : 'secondary'}`}
-                style={{ fontSize: 14, padding: '6px 12px' }}
+                style={{ 
+                  fontSize: isMobile ? 12 : 14, 
+                  padding: isMobile ? '6px 10px' : '6px 12px',
+                  whiteSpace: 'nowrap'
+                }}
               >
                 {cat.emoji && <span style={{ marginRight: 4 }}>{cat.emoji}</span>}
                 {cat.label}
@@ -119,7 +138,7 @@ export default function Distros() {
 
             <div style={{ 
               display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))',
               gap: 16,
               padding: '4px 4px 16px 4px'
             }}>
@@ -139,12 +158,16 @@ export default function Distros() {
                     cursor: 'pointer'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.borderColor = '#1f6feb';
+                    if (!isMobile) {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.borderColor = '#1f6feb';
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.borderColor = '#2a3a55';
+                    if (!isMobile) {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.borderColor = '#2a3a55';
+                    }
                   }}
                 >
                   <img
@@ -153,12 +176,13 @@ export default function Distros() {
                     style={{
                       width: 48,
                       height: 48,
-                      objectFit: 'contain'
+                      objectFit: 'contain',
+                      flexShrink: 0
                     }}
                   />
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{ margin: '0 0 4px 0', fontSize: 18 }}>{distro.name}</h3>
-                    <p className="p muted" style={{ margin: 0, fontSize: 13 }}>{distro.description}</p>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 style={{ margin: '0 0 4px 0', fontSize: 18, wordBreak: 'break-word' }}>{distro.name}</h3>
+                    <p className="p muted" style={{ margin: 0, fontSize: 13, wordBreak: 'break-word' }}>{distro.description}</p>
                     <div style={{ marginTop: 8 }}>
                       <span className="badge" style={{ fontSize: 11 }}>
                         {categories.find(c => c.id === distro.category)?.label.split(' / ')[0] || distro.category}
@@ -197,7 +221,7 @@ export default function Distros() {
             width: '100%',
             minHeight: '100vh',
             background: '#0f1620',
-            padding: '32px 48px'
+            padding: isMobile ? '24px 16px' : '32px 48px'
           }} onClick={(e) => e.stopPropagation()}>
             <div style={{ 
               maxWidth: 1400, 
@@ -213,9 +237,9 @@ export default function Distros() {
                   background: 'rgba(255, 255, 255, 0.1)',
                   border: '1px solid #2a3a55',
                   borderRadius: '50%',
-                  width: 40,
-                  height: 40,
-                  fontSize: 24,
+                  width: isMobile ? 36 : 40,
+                  height: isMobile ? 36 : 40,
+                  fontSize: isMobile ? 20 : 24,
                   cursor: 'pointer',
                   color: '#aeb9ca',
                   display: 'flex',
@@ -236,10 +260,33 @@ export default function Distros() {
                 ×
               </button>
 
-              <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 24, marginTop: 8 }}>
-                <img src={selectedDistro.logo} alt={selectedDistro.name} style={{ width: 48, height: 48, objectFit: 'contain' }} />
+              <div style={{ 
+                display: 'flex', 
+                gap: 16, 
+                alignItems: 'center', 
+                marginBottom: 24, 
+                marginTop: isMobile ? 40 : 8,
+                flexWrap: 'wrap'
+              }}>
+                <img 
+                  src={selectedDistro.logo} 
+                  alt={selectedDistro.name} 
+                  style={{ 
+                    width: isMobile ? 40 : 48, 
+                    height: isMobile ? 40 : 48, 
+                    objectFit: 'contain',
+                    flexShrink: 0
+                  }} 
+                />
                 <div>
-                  <h1 style={{ margin: 0, fontSize: 28, color: '#ffffff' }}>{selectedDistro.name}</h1>
+                  <h1 style={{ 
+                    margin: 0, 
+                    fontSize: isMobile ? 24 : 28, 
+                    color: '#ffffff',
+                    wordBreak: 'break-word'
+                  }}>
+                    {selectedDistro.name}
+                  </h1>
                   <div style={{ marginTop: 6 }}>
                     <span className="badge" style={{ fontSize: 12, padding: '4px 10px' }}>
                       {categories.find(c => c.id === selectedDistro.category)?.label.split(' / ')[0] || selectedDistro.category}
@@ -248,7 +295,12 @@ export default function Distros() {
                 </div>
               </div>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 40, alignItems: 'start' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 380px', 
+                gap: isMobile ? 0 : 40,
+                alignItems: 'start'
+              }}>
                 <div>
                   <img 
                     src={selectedDistro.screenshot} 
@@ -258,16 +310,17 @@ export default function Distros() {
                       borderRadius: 20, 
                       marginBottom: 32, 
                       border: '1px solid #2a3a55',
-                      boxShadow: '0 12px 32px rgba(0,0,0,0.4)'
+                      boxShadow: '0 12px 32px rgba(0,0,0,0.4)',
+                      height: 'auto'
                     }} 
                   />
                   <div>
-                    <h2 style={{ fontSize: 24, marginBottom: 16, color: '#ffffff' }}>About {selectedDistro.name}</h2>
-                    <p className="p" style={{ fontSize: 15, lineHeight: 1.7 }}>{selectedDistro.longDescription}</p>
+                    <h2 style={{ fontSize: isMobile ? 22 : 24, marginBottom: 16, color: '#ffffff' }}>About {selectedDistro.name}</h2>
+                    <p className="p" style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.7, wordBreak: 'break-word' }}>{selectedDistro.longDescription}</p>
                   </div>
                 </div>
                 
-                <div></div>
+                {!isMobile && <div></div>}
               </div>
             </div>
           </div>
@@ -275,17 +328,24 @@ export default function Distros() {
       )}
 
       <div className="card" style={{ marginTop: 32 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginBottom: 20, 
+          flexWrap: 'wrap', 
+          gap: 12 
+        }}>
           <div>
             <h2 className="h2" style={{ margin: 0 }}>Linux Glossary</h2>
-            <p className="p muted" style={{ margin: '4px 0 0 0', fontSize: 13 }}>
-            Click "Show Glossary" to learn new definitions regarding operating systems and Linux.
+            <p className="p muted" style={{ margin: '4px 0 0 0', fontSize: isMobile ? 12 : 13 }}>
+              Click "Show Glossary" to learn new definitions regarding operating systems and Linux.
             </p>
           </div>
           <button 
             onClick={() => setShowGlossary(!showGlossary)} 
             className="btn secondary"
-            style={{ fontSize: 14 }}
+            style={{ fontSize: isMobile ? 12 : 14, padding: isMobile ? '6px 12px' : '8px 16px' }}
           >
             {showGlossary ? 'Hide Glossary' : 'Show Glossary'}
           </button>
@@ -300,7 +360,7 @@ export default function Distros() {
             ) : (
               <div style={{ 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))',
                 gap: 16
               }}>
                 {glossaryTerms.map((item) => (
@@ -319,16 +379,20 @@ export default function Distros() {
                       display: 'block'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.borderColor = '#1f6feb';
+                      if (!isMobile) {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.borderColor = '#1f6feb';
+                      }
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.borderColor = '#2a3a55';
+                      if (!isMobile) {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.borderColor = '#2a3a55';
+                      }
                     }}
                   >
-                    <h3 style={{ margin: '0 0 8px 0', fontSize: 16, color: '#ffffff' }}>{item.term}</h3>
-                    <p className="p muted" style={{ margin: 0, fontSize: 13 }}>{item.definition}</p>
+                    <h3 style={{ margin: '0 0 8px 0', fontSize: isMobile ? 15 : 16, color: '#ffffff', wordBreak: 'break-word' }}>{item.term}</h3>
+                    <p className="p muted" style={{ margin: 0, fontSize: isMobile ? 12 : 13, wordBreak: 'break-word' }}>{item.definition}</p>
                   </a>
                 ))}
               </div>
