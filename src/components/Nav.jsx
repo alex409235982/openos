@@ -36,8 +36,6 @@ export default function Nav() {
           <Link to="/">Home</Link>
           <Link to="/about">About</Link>
           <Link to="/distros">Distros</Link>
-          <Link to="/terms">Terms</Link>
-          <Link to="/privacy">Privacy</Link>
           {user ? <Link to="/dashboard">Dashboard</Link> : null}
         </div>
       </div>
