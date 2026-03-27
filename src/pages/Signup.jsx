@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
+import { FaDiscord } from "react-icons/fa";
 
 export default function Signup() {
   const nav = useNavigate();
@@ -27,6 +30,10 @@ export default function Signup() {
     }
   };
 
+  const handleOAuth = (provider) => {
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:4000"}/api/oauth/${provider}`;
+  };
+
   return (
     <div className="container">
       <div className="card" style={{ maxWidth: 520, margin: "0 auto" }}>
@@ -46,6 +53,84 @@ export default function Signup() {
         </form>
         <div style={{ height: 12 }} />
         <Link to="/login">Already have an account?</Link>
+        
+        <div style={{ marginTop: 24, position: "relative", textAlign: "center" }}>
+          <div style={{ borderTop: "1px solid #2a3a55", margin: "20px 0" }}></div>
+          <span style={{ 
+            position: "absolute", 
+            top: "50%", 
+            left: "50%", 
+            transform: "translate(-50%, -50%)", 
+            background: "rgba(17, 24, 38, 0.95)", 
+            padding: "0 12px",
+            color: "#aeb9ca",
+            fontSize: 14
+          }}>
+            OR
+          </span>
+        </div>
+        
+        <div className="row" style={{ justifyContent: "center", gap: 16, marginTop: 24 }}>
+          <button 
+            onClick={() => handleOAuth('google')}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: "#22324a",
+              border: "none",
+              color: "white",
+              padding: "10px 20px",
+              borderRadius: 10,
+              cursor: "pointer",
+              fontSize: 14,
+              fontWeight: 500
+            }}
+          >
+            <FcGoogle size={20} />
+            Google
+          </button>
+          
+          <button 
+            onClick={() => handleOAuth('github')}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: "#22324a",
+              border: "none",
+              color: "white",
+              padding: "10px 20px",
+              borderRadius: 10,
+              cursor: "pointer",
+              fontSize: 14,
+              fontWeight: 500
+            }}
+          >
+            <FaGithub size={18} />
+            GitHub
+          </button>
+          
+          <button 
+            onClick={() => handleOAuth('discord')}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: "#22324a",
+              border: "none",
+              color: "white",
+              padding: "10px 20px",
+              borderRadius: 10,
+              cursor: "pointer",
+              fontSize: 14,
+              fontWeight: 500
+            }}
+          >
+            <FaDiscord size={18} />
+            Discord
+          </button>
+        </div>
       </div>
     </div>
   );
