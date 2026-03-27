@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
 
 export default function OAuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -18,12 +16,11 @@ export default function OAuthCallback() {
 
     if (token) {
       localStorage.setItem("openos_access", token);
-      window.dispatchEvent(new Event("storage"));
-      navigate("/dashboard");
+      window.location.href = "/";
     } else {
       navigate("/login");
     }
-  }, [searchParams, navigate, login]);
+  }, [searchParams, navigate]);
 
   return (
     <div className="container">
