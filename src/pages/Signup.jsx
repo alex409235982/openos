@@ -31,7 +31,7 @@ export default function Signup() {
   };
 
   const handleOAuth = (provider) => {
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:4000"}/api/oauth/${provider}`;
+    window.location.href = `/api/oauth/${provider}`;
   };
 
   return (
