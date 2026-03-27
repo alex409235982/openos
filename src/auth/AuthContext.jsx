@@ -26,6 +26,21 @@ export function AuthProvider({ children }) {
       }
     };
     run();
+  }, [accessToken]);
+
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "openos_access") {
+        const newToken = localStorage.getItem("openos_access");
+        setAccessToken(newToken || "");
+        if (!newToken) {
+          setUser(null);
+        }
+      }
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const login = async (email, password, remember) => {
