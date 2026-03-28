@@ -22,7 +22,7 @@ export default function Nav() {
           }}
         >
           <img
-            src="https://i.ibb.co/xt4WD25L/OPENOS-Logo.png"
+            src="https://raw.githubusercontent.com/alex409235982/openos-assets/refs/heads/main/OPENOS%20Logo.png"
             alt="OPENOS"
             style={{
               height: 28,
