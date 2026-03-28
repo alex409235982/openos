@@ -12,8 +12,24 @@ export default function Distros() {
   const [glossaryTerms, setGlossaryTerms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [glossaryLoading, setGlossaryLoading] = useState(false);
+  const [sessionConfig, setSessionConfig] = useState({
+    memory: '500',
+    storage: '5'
+  });
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const memoryOptions = [
+    { value: '500', label: '500 MB RAM', free: true, isPremium: false },
+    { value: '2000', label: '2 GB RAM', free: false, isPremium: true }
+  ];
+
+  const storageOptions = [
+    { value: '5', label: '5 GB Storage', free: true, isPremium: false },
+    { value: '25', label: '25 GB Storage', free: false, isPremium: true }
+  ];
+
+  const isPremiumConfig = sessionConfig.memory === '2000' || sessionConfig.storage === '25';
 
   useEffect(() => {
     const fetchDistros = async () => {
@@ -62,6 +78,39 @@ export default function Distros() {
       document.body.style.overflow = 'auto';
     };
   }, [selectedDistro]);
+
+  const handleMemoryChange = (value) => {
+    setSessionConfig(prev => {
+      const newConfig = { ...prev, memory: value };
+      if (value === '2000') {
+        newConfig.storage = '25';
+      } else if (value === '500' && prev.storage !== '5') {
+        newConfig.storage = '5';
+      }
+      return newConfig;
+    });
+  };
+
+  const handleStorageChange = (value) => {
+    setSessionConfig(prev => {
+      const newConfig = { ...prev, storage: value };
+      if (value === '25') {
+        newConfig.memory = '2000';
+      } else if (value === '5' && prev.memory !== '500') {
+        newConfig.memory = '500';
+      }
+      return newConfig;
+    });
+  };
+
+  const handleLaunchSession = () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    
+    navigate('/dashboard');
+  };
 
   const categories = [
     { id: "all", label: "All Distributions" },
@@ -320,7 +369,183 @@ export default function Distros() {
                   </div>
                 </div>
                 
-                {!isMobile && <div></div>}
+                <div>
+                  <div style={{
+                    background: 'rgba(17, 24, 38, 0.6)',
+                    border: '1px solid #2a3a55',
+                    borderRadius: 20,
+                    padding: isMobile ? 20 : 24
+                  }}>
+                    <h2 style={{ fontSize: isMobile ? 20 : 22, marginBottom: 20, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      Session Configuration
+                    </h2>
+                    
+                    <div style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      gap: 24,
+                      marginBottom: 24
+                    }}>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 12, color: '#cdd6e5', fontWeight: 500 }}>
+                          Memory (RAM)
+                        </label>
+                        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                          {memoryOptions.map(option => (
+                            <button
+                              key={option.value}
+                              onClick={() => handleMemoryChange(option.value)}
+                              style={{
+                                flex: 1,
+                                padding: '12px 16px',
+                                background: sessionConfig.memory === option.value 
+                                  ? '#1f6feb' 
+                                  : 'rgba(31, 111, 235, 0.1)',
+                                border: sessionConfig.memory === option.value 
+                                  ? '1px solid #1f6feb' 
+                                  : '1px solid #2a3a55',
+                                borderRadius: 12,
+                                color: sessionConfig.memory === option.value 
+                                  ? '#ffffff' 
+                                  : '#cdd6e5',
+                                cursor: 'pointer',
+                                fontWeight: 500,
+                                fontSize: 14,
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              {option.label}
+                              {option.isPremium && (
+                                <span style={{ 
+                                  display: 'block', 
+                                  fontSize: 11, 
+                                  marginTop: 4,
+                                  color: sessionConfig.memory === option.value ? '#ffffff' : '#ffb86b'
+                                }}>
+                                  Premium
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 12, color: '#cdd6e5', fontWeight: 500 }}>
+                          Storage
+                        </label>
+                        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                          {storageOptions.map(option => (
+                            <button
+                              key={option.value}
+                              onClick={() => handleStorageChange(option.value)}
+                              style={{
+                                flex: 1,
+                                padding: '12px 16px',
+                                background: sessionConfig.storage === option.value 
+                                  ? '#1f6feb' 
+                                  : 'rgba(31, 111, 235, 0.1)',
+                                border: sessionConfig.storage === option.value 
+                                  ? '1px solid #1f6feb' 
+                                  : '1px solid #2a3a55',
+                                borderRadius: 12,
+                                color: sessionConfig.storage === option.value 
+                                  ? '#ffffff' 
+                                  : '#cdd6e5',
+                                cursor: 'pointer',
+                                fontWeight: 500,
+                                fontSize: 14,
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              {option.label}
+                              {option.isPremium && (
+                                <span style={{ 
+                                  display: 'block', 
+                                  fontSize: 11, 
+                                  marginTop: 4,
+                                  color: sessionConfig.storage === option.value ? '#ffffff' : '#ffb86b'
+                                }}>
+                                  Premium
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{
+                      background: 'rgba(31, 111, 235, 0.05)',
+                      borderRadius: 12,
+                      padding: 16,
+                      marginBottom: 24,
+                      border: '1px solid rgba(31, 111, 235, 0.2)'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <img 
+                          src={selectedDistro.logo} 
+                          alt={selectedDistro.name}
+                          style={{ 
+                            width: 32, 
+                            height: 32, 
+                            objectFit: 'contain'
+                          }} 
+                        />
+                        <div>
+                          <div style={{ color: '#ffffff', fontWeight: 500, marginBottom: 4 }}>
+                            Session Time Limits
+                          </div>
+                          <div style={{ color: '#aeb9ca', fontSize: 14 }}>
+                            {isPremiumConfig ? (
+                              <span style={{ color: '#8bffb3' }}>Premium users get unlimited session time.</span>
+                            ) : (
+                              <span>Free users get up to 30 minutes per session.</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleLaunchSession}
+                      style={{
+                        width: '100%',
+                        padding: '16px',
+                        background: '#1f6feb',
+                        border: 'none',
+                        borderRadius: 12,
+                        color: '#ffffff',
+                        fontSize: 16,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        marginBottom: 16
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#2a7eef';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#1f6feb';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      Launch {selectedDistro.name} Session
+                    </button>
+
+                    <div style={{
+                      textAlign: 'center',
+                      padding: '12px',
+                      background: 'rgba(255, 139, 139, 0.05)',
+                      borderRadius: 8,
+                      fontSize: 13,
+                      color: '#ffb86b'
+                    }}>
+                      Note: All sessions are isolated and temporary. Changes will not persist after the session ends.
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
