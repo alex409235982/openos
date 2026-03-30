@@ -1,10 +1,16 @@
-const API_BASE_URL = "";
+const API_BASE_URL = "https://openos-backend.vercel.app";
 
 export async function apiRequest(path, { method = "GET", body, token } = {}) {
   const headers = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
+  else if (localStorage.getItem("openos_access")) {
+    headers.Authorization = `Bearer ${localStorage.getItem("openos_access")}`;
+  }
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  const url = `${API_BASE_URL}${cleanPath}`;
+  
+  const res = await fetch(url, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
