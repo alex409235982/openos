@@ -43,8 +43,11 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  const login = async (email, password, remember) => {
-    const data = await apiRequest("/api/auth/login", { method: "POST", body: { email, password, remember } });
+  const login = async (email, password, remember, twoFactorCode) => {
+    const data = await apiRequest("/api/auth/login", { 
+      method: "POST", 
+      body: { email, password, remember, twoFactorCode } 
+    });
     setAccessToken(data.accessToken);
     localStorage.setItem("openos_access", data.accessToken);
     setUser(data.user);
@@ -69,6 +72,7 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => ({
     user,
+    setUser,
     accessToken,
     ready,
     login,
