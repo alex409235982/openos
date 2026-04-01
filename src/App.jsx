@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Nav from "./components/Nav.jsx";
 import Footer from "./components/Footer.jsx";
@@ -15,36 +15,177 @@ import Dashboard from "./pages/Dashboard.jsx";
 import OAuthCallback from "./pages/OAuthCallback.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
-export default function App() {
+const ThemeContext = createContext();
+
+export function useTheme() {
+  return useContext(ThemeContext);
+}
+
+export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("theme") || "light";
+  });
+  
+  const [blurLevel, setBlurLevel] = useState(() => {
+    return parseInt(localStorage.getItem("blurLevel")) || 2;
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-blur", blurLevel);
+    localStorage.setItem("blurLevel", blurLevel);
+  }, [blurLevel]);
+
+  const value = {
+    theme,
+    setTheme,
+    blurLevel,
+    setBlurLevel
+  };
+
+  return (
+    <ThemeContext.Provider value={value}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+function AppContent() {
   return (
     <div className="appShell">
-      <div className="container pageContent">
-        <Nav />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/distros" element={<Distros />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot" element={<ForgotPassword />} />
-          <Route path="/reset" element={<ResetPassword />} />
-          <Route path="/oauth-callback" element={<OAuthCallback />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </div>
-
-      <div className="container">
-        <Footer />
-      </div>
+      <div className="bg"></div>
+      <Routes>
+        <Route path="/" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <Home />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route path="/about" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <About />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route path="/distros" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <Distros />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route path="/terms" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <Terms />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route path="/privacy" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <Privacy />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route path="/login" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <Login />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route path="/signup" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <Signup />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route path="/forgot" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <ForgotPassword />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route path="/reset" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <ResetPassword />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route path="/oauth-callback" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <OAuthCallback />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
