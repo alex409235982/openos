@@ -4,6 +4,31 @@
   background: #0b0f14;
 }
 
+:root,
+[data-theme="light"] {
+  --bg-image: url('https://raw.githubusercontent.com/alex409235982/openos-assets/refs/heads/main/Light%20Background.jpg');
+  --bg-overlay: rgba(11, 15, 20, 0.75);
+  --blur-amount: 4px;
+}
+
+[data-theme="dark"] {
+  --bg-image: url('https://raw.githubusercontent.com/alex409235982/openos-assets/refs/heads/main/Dark%20Background.png');
+  --bg-overlay: rgba(0, 0, 0, 0.85);
+  --blur-amount: 4px;
+}
+
+[data-theme="light"][data-blur="0"] { --blur-amount: 0px; }
+[data-theme="light"][data-blur="1"] { --blur-amount: 2px; }
+[data-theme="light"][data-blur="2"] { --blur-amount: 4px; }
+[data-theme="light"][data-blur="3"] { --blur-amount: 8px; }
+[data-theme="light"][data-blur="4"] { --blur-amount: 12px; }
+
+[data-theme="dark"][data-blur="0"] { --blur-amount: 0px; }
+[data-theme="dark"][data-blur="1"] { --blur-amount: 2px; }
+[data-theme="dark"][data-blur="2"] { --blur-amount: 4px; }
+[data-theme="dark"][data-blur="3"] { --blur-amount: 8px; }
+[data-theme="dark"][data-blur="4"] { --blur-amount: 12px; }
+
 a { color: inherit; text-decoration: none; }
 * { box-sizing: border-box; }
 
@@ -13,19 +38,21 @@ html, body, #root { height: 100%; }
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: url('https://c02.purpledshub.com/uploads/sites/41/2021/08/GettyImages-484576000-c-bc46733.jpg');
+  background-image: var(--bg-image);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
+  transition: background-image 0.3s ease;
 }
 
 .bg::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(11, 15, 20, 0.75);
-  backdrop-filter: blur(4px);
+  background: var(--bg-overlay);
+  backdrop-filter: blur(var(--blur-amount));
+  transition: background 0.3s ease, backdrop-filter 0.3s ease;
 }
 
 .bg::after {
