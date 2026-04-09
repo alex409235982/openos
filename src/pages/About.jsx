@@ -129,41 +129,6 @@ export default function About() {
       </div>
 
       <div className="card" style={{ marginBottom: 32 }}>
-        <h2 className="h2">Why Switch To Linux?</h2>
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: 20,
-          marginTop: 10
-        }}>
-          <div>
-            <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>🔓 Freedom & Open Source</h3>
-            <p className="p muted" style={{ margin: 0 }}>Linux gives you complete control over your system. You can view, modify, and share the code however you want.</p>
-          </div>
-          <div>
-            <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>🛡️ Security & Privacy</h3>
-            <p className="p muted" style={{ margin: 0 }}>There are better permission systems and zero telemetry spying on your activities.</p>
-          </div>
-          <div>
-            <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>💸 Completely Free</h3>
-            <p className="p muted" style={{ margin: 0 }}>No license fees and no subscriptions. Linux is free for everyone, forever.</p>
-          </div>
-          <div>
-            <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>🔄 Revive Old Hardware</h3>
-            <p className="p muted" style={{ margin: 0 }}>Give old computers a second life. Linux runs fast on hardware that Windows abandoned.</p>
-          </div>
-          <div>
-            <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>🎮 Gaming Ready</h3>
-            <p className="p muted" style={{ margin: 0 }}>You can use tools like Proton to play thousands of Windows games on Linux. Start up an emulator while you are at it!</p>
-          </div>
-          <div>
-            <h3 style={{ fontSize: 18, margin: "0 0 8px 0", color: "#8bffb3" }}>🌍 Community Driven</h3>
-            <p className="p muted" style={{ margin: 0 }}>Join millions of users and developers who believe in open source and collaboration.</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="card" style={{ marginBottom: 32 }}>
         <h2 className="h2">How It Works</h2>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
@@ -179,7 +144,7 @@ export default function About() {
             }}>1</div>
             <div>
               <h3 style={{ margin: "0 0 4px 0", fontSize: 18 }}>Choose a Distribution</h3>
-              <p className="p muted">Browse our collection and pick the Linux distro you want to explore.</p>
+              <p className="p muted">Browse our collection, either on the Dashboard or the Distros page, and pick the Linux distro you want to explore.</p>
             </div>
           </div>
           
@@ -217,20 +182,6 @@ export default function About() {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="card" style={{ 
-        textAlign: "center", 
-        background: "linear-gradient(145deg, rgba(31,111,235,0.15) 0%, rgba(17,24,38,0.9) 100%)",
-        borderColor: "#1f6feb"
-      }}>
-        <h2 className="h2" style={{ marginBottom: 16 }}>Ready to get started?</h2>
-        <p className="p" style={{ maxWidth: 500, margin: "0 auto 20px auto" }}>
-          Head over to our <strong>distributions page</strong> and try any Linux distro instantly in your browser.
-        </p>
-        <Link to="/distros" className="btn" style={{ fontSize: 18, padding: "12px 28px" }}>
-          Browse Distributions
-        </Link>
       </div>
     </div>
   );
