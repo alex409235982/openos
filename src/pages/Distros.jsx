@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext';
-import { apiRequest } from '../api';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import { apiRequest } from "../api";
 
 export default function Distros() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,24 +12,12 @@ export default function Distros() {
   const [glossaryTerms, setGlossaryTerms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [glossaryLoading, setGlossaryLoading] = useState(false);
-  const [sessionConfig, setSessionConfig] = useState({
-    memory: '500',
-    storage: '5'
-  });
+  const [launching, setLaunching] = useState(false);
+  const [launchStatus, setLaunchStatus] = useState('');
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const memoryOptions = [
-    { value: '500', label: '500 MB RAM', free: true, isPremium: false },
-    { value: '2000', label: '2 GB RAM', free: false, isPremium: true }
-  ];
-
-  const storageOptions = [
-    { value: '5', label: '5 GB Storage', free: true, isPremium: false },
-    { value: '25', label: '25 GB Storage', free: false, isPremium: true }
-  ];
-
-  const isPremiumConfig = sessionConfig.memory === '2000' || sessionConfig.storage === '25';
+  const isPremium = user?.plan === "premium";
 
   useEffect(() => {
     const fetchDistros = async () => {
@@ -79,37 +67,27 @@ export default function Distros() {
     };
   }, [selectedDistro]);
 
-  const handleMemoryChange = (value) => {
-    setSessionConfig(prev => {
-      const newConfig = { ...prev, memory: value };
-      if (value === '2000') {
-        newConfig.storage = '25';
-      } else if (value === '500' && prev.storage !== '5') {
-        newConfig.storage = '5';
-      }
-      return newConfig;
-    });
-  };
-
-  const handleStorageChange = (value) => {
-    setSessionConfig(prev => {
-      const newConfig = { ...prev, storage: value };
-      if (value === '25') {
-        newConfig.memory = '2000';
-      } else if (value === '5' && prev.memory !== '500') {
-        newConfig.memory = '500';
-      }
-      return newConfig;
-    });
-  };
-
-  const handleLaunchSession = () => {
+  const handleLaunchSession = async () => {
     if (!user) {
       navigate('/login');
       return;
     }
     
-    navigate('/dashboard');
+    setLaunching(true);
+    setLaunchStatus('Starting your VM...');
+    
+    try {
+      const response = await apiRequest("/api/sessions", {
+        method: "POST",
+        body: { distroId: selectedDistro._id }
+      });
+      
+      navigate('/dashboard', { state: { newSession: response } });
+    } catch (err) {
+      console.error("Failed to launch session:", err);
+      alert(err.message || "Failed to launch session. Please try again.");
+      setLaunching(false);
+    }
   };
 
   const categories = [
@@ -136,7 +114,7 @@ export default function Distros() {
       <div className="card" style={{ marginBottom: 24, textAlign: 'center' }}>
         <h1 className="h1">Available Distributions</h1>
         <p className="p" style={{ maxWidth: 600, margin: '0 auto' }}>
-          Browse our collection of Linux distributions. Click on any distribution to learn more.
+          Browse and launch Linux distributions directly in your browser. Click on any distribution to learn more and start a session.
         </p>
       </div>
 
@@ -265,7 +243,7 @@ export default function Distros() {
           justifyContent: 'center',
           zIndex: 1000,
           overflowY: 'auto'
-        }} onClick={() => setSelectedDistro(null)}>
+        }} onClick={() => !launching && setSelectedDistro(null)}>
           <div style={{
             width: '100%',
             minHeight: '100vh',
@@ -277,37 +255,39 @@ export default function Distros() {
               margin: '0 auto',
               position: 'relative'
             }}>
-              <button 
-                onClick={() => setSelectedDistro(null)} 
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid #2a3a55',
-                  borderRadius: '50%',
-                  width: isMobile ? 36 : 40,
-                  height: isMobile ? 36 : 40,
-                  fontSize: isMobile ? 20 : 24,
-                  cursor: 'pointer',
-                  color: '#aeb9ca',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s',
-                  zIndex: 10
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                  e.currentTarget.style.color = '#ffffff';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                  e.currentTarget.style.color = '#aeb9ca';
-                }}
-              >
-                ×
-              </button>
+              {!launching && (
+                <button 
+                  onClick={() => setSelectedDistro(null)} 
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid #2a3a55',
+                    borderRadius: '50%',
+                    width: isMobile ? 36 : 40,
+                    height: isMobile ? 36 : 40,
+                    fontSize: isMobile ? 20 : 24,
+                    cursor: 'pointer',
+                    color: '#aeb9ca',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                    zIndex: 10
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                    e.currentTarget.style.color = '#ffffff';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.color = '#aeb9ca';
+                  }}
+                >
+                  ×
+                </button>
+              )}
 
               <div style={{ 
                 display: 'flex', 
@@ -383,94 +363,42 @@ export default function Distros() {
                     <div style={{ 
                       display: 'flex', 
                       flexDirection: 'column',
-                      gap: 24,
+                      gap: 20,
                       marginBottom: 24
                     }}>
                       <div>
                         <label style={{ display: 'block', marginBottom: 12, color: '#cdd6e5', fontWeight: 500 }}>
-                          Memory (RAM)
+                          VM Username
                         </label>
-                        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                          {memoryOptions.map(option => (
-                            <button
-                              key={option.value}
-                              onClick={() => handleMemoryChange(option.value)}
-                              style={{
-                                flex: 1,
-                                padding: '12px 16px',
-                                background: sessionConfig.memory === option.value 
-                                  ? '#1f6feb' 
-                                  : 'rgba(31, 111, 235, 0.1)',
-                                border: sessionConfig.memory === option.value 
-                                  ? '1px solid #1f6feb' 
-                                  : '1px solid #2a3a55',
-                                borderRadius: 12,
-                                color: sessionConfig.memory === option.value 
-                                  ? '#ffffff' 
-                                  : '#cdd6e5',
-                                cursor: 'pointer',
-                                fontWeight: 500,
-                                fontSize: 14,
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              {option.label}
-                              {option.isPremium && (
-                                <span style={{ 
-                                  display: 'block', 
-                                  fontSize: 11, 
-                                  marginTop: 4,
-                                  color: sessionConfig.memory === option.value ? '#ffffff' : '#ffb86b'
-                                }}>
-                                  Premium
-                                </span>
-                              )}
-                            </button>
-                          ))}
+                        <div style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          background: 'rgba(11, 18, 32, 0.85)',
+                          border: '1px solid #2a3a55',
+                          borderRadius: 12,
+                          color: '#8bffb3',
+                          fontSize: 14,
+                          fontFamily: 'monospace'
+                        }}>
+                          openos
                         </div>
                       </div>
 
                       <div>
                         <label style={{ display: 'block', marginBottom: 12, color: '#cdd6e5', fontWeight: 500 }}>
-                          Storage
+                          VM Password
                         </label>
-                        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                          {storageOptions.map(option => (
-                            <button
-                              key={option.value}
-                              onClick={() => handleStorageChange(option.value)}
-                              style={{
-                                flex: 1,
-                                padding: '12px 16px',
-                                background: sessionConfig.storage === option.value 
-                                  ? '#1f6feb' 
-                                  : 'rgba(31, 111, 235, 0.1)',
-                                border: sessionConfig.storage === option.value 
-                                  ? '1px solid #1f6feb' 
-                                  : '1px solid #2a3a55',
-                                borderRadius: 12,
-                                color: sessionConfig.storage === option.value 
-                                  ? '#ffffff' 
-                                  : '#cdd6e5',
-                                cursor: 'pointer',
-                                fontWeight: 500,
-                                fontSize: 14,
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              {option.label}
-                              {option.isPremium && (
-                                <span style={{ 
-                                  display: 'block', 
-                                  fontSize: 11, 
-                                  marginTop: 4,
-                                  color: sessionConfig.storage === option.value ? '#ffffff' : '#ffb86b'
-                                }}>
-                                  Premium
-                                </span>
-                              )}
-                            </button>
-                          ))}
+                        <div style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          background: 'rgba(11, 18, 32, 0.85)',
+                          border: '1px solid #2a3a55',
+                          borderRadius: 12,
+                          color: '#8bffb3',
+                          fontSize: 14,
+                          fontFamily: 'monospace'
+                        }}>
+                          openos
                         </div>
                       </div>
                     </div>
@@ -494,13 +422,16 @@ export default function Distros() {
                         />
                         <div>
                           <div style={{ color: '#ffffff', fontWeight: 500, marginBottom: 4 }}>
-                            Session Time Limits
+                            VM Specifications
                           </div>
-                          <div style={{ color: '#aeb9ca', fontSize: 14 }}>
-                            {isPremiumConfig ? (
-                              <span style={{ color: '#8bffb3' }}>Premium users get unlimited session time.</span>
+                          <div style={{ color: '#aeb9ca', fontSize: 13 }}>
+                            4 GB RAM • 50 GB Storage
+                          </div>
+                          <div style={{ color: '#aeb9ca', fontSize: 12, marginTop: 6 }}>
+                            {isPremium ? (
+                              <span style={{ color: '#8bffb3' }}>Premium: Unlimited session time</span>
                             ) : (
-                              <span>Free users get up to 30 minutes per session.</span>
+                              <span>Free: 30 minute session limit</span>
                             )}
                           </div>
                         </div>
@@ -509,29 +440,35 @@ export default function Distros() {
 
                     <button
                       onClick={handleLaunchSession}
+                      disabled={launching}
                       style={{
                         width: '100%',
                         padding: '16px',
-                        background: '#1f6feb',
+                        background: launching ? '#2a3a55' : '#1f6feb',
                         border: 'none',
                         borderRadius: 12,
                         color: '#ffffff',
                         fontSize: 16,
                         fontWeight: 600,
-                        cursor: 'pointer',
+                        cursor: launching ? 'not-allowed' : 'pointer',
                         transition: 'all 0.2s',
-                        marginBottom: 16
+                        marginBottom: 16,
+                        opacity: launching ? 0.7 : 1
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#2a7eef';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        if (!launching) {
+                          e.currentTarget.style.background = '#2a7eef';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = '#1f6feb';
-                        e.currentTarget.style.transform = 'translateY(0)';
+                        if (!launching) {
+                          e.currentTarget.style.background = '#1f6feb';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }
                       }}
                     >
-                      Launch {selectedDistro.name} Session
+                      {launching ? 'Starting VM...' : `Launch ${selectedDistro.name} Session`}
                     </button>
 
                     <div style={{
@@ -548,6 +485,48 @@ export default function Distros() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {launching && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.98)',
+          backdropFilter: 'blur(16px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 2000
+        }}>
+          <div style={{
+            textAlign: 'center',
+            maxWidth: 400,
+            padding: 40
+          }}>
+            <div style={{
+              width: 80,
+              height: 80,
+              margin: '0 auto 24px',
+              border: '3px solid #2a3a55',
+              borderTopColor: '#1f6feb',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }} />
+            <style>{`
+              @keyframes spin {
+                to { transform: rotate(360deg); }
+              }
+            `}</style>
+            <h2 style={{ color: '#ffffff', marginBottom: 12 }}>Starting Your Session</h2>
+            <p style={{ color: '#aeb9ca', fontSize: 16, marginBottom: 8 }}>{launchStatus}</p>
+            <p style={{ color: '#6b7b93', fontSize: 12, marginTop: 16 }}>
+              This will take about 30 seconds...
+            </p>
           </div>
         </div>
       )}
