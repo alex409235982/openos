@@ -16,6 +16,7 @@ export default function Settings() {
   const [pendingAction, setPendingAction] = useState(null);
   const [pendingData, setPendingData] = useState(null);
   const [twoFactorInput, setTwoFactorInput] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
 
   const [profilePicture, setProfilePicture] = useState(null);
   const [profilePreview, setProfilePreview] = useState(user?.profilePicture || null);
@@ -37,6 +38,13 @@ export default function Settings() {
   const [prefTheme, setPrefTheme] = useState(theme);
   const [prefBlur, setPrefBlur] = useState(blurLevel);
   const [savingPrefs, setSavingPrefs] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const blurOptions = [
     { value: 0, label: "None" },
@@ -317,18 +325,19 @@ export default function Settings() {
   const availableProviders = ["google", "github", "discord"].filter(p => !connectedProviders.includes(p));
 
   return (
-    <div style={{ padding: "24px" }}>
-      <h1 style={{ fontSize: 28, marginBottom: 8, color: "#ffffff" }}>Settings</h1>
-      <p style={{ color: "#aeb9ca", marginBottom: 24 }}>Manage your account preferences</p>
+    <div style={{ padding: isMobile ? "16px" : "24px" }}>
+      <h1 style={{ fontSize: isMobile ? 24 : 28, marginBottom: 8, color: "#ffffff" }}>Settings</h1>
+      <p style={{ color: "#aeb9ca", marginBottom: 24, fontSize: isMobile ? 14 : 16 }}>Manage your account preferences</p>
 
       {message.text && (
         <div style={{
-          padding: "12px 16px",
+          padding: isMobile ? "10px 12px" : "12px 16px",
           borderRadius: 10,
           marginBottom: 20,
           background: message.type === "success" ? "rgba(139, 255, 179, 0.1)" : "rgba(255, 139, 139, 0.1)",
           border: `1px solid ${message.type === "success" ? "#8bffb3" : "#ff8b8b"}`,
-          color: message.type === "success" ? "#8bffb3" : "#ff8b8b"
+          color: message.type === "success" ? "#8bffb3" : "#ff8b8b",
+          fontSize: isMobile ? 13 : 14
         }}>
           {message.text}
         </div>
@@ -346,7 +355,8 @@ export default function Settings() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          zIndex: 2000
+          zIndex: 2000,
+          padding: 20
         }} onClick={() => {
           setShow2FAModal(false);
           setPendingAction(null);
@@ -356,12 +366,12 @@ export default function Settings() {
             background: "#0f1620",
             border: "1px solid #2a3a55",
             borderRadius: 24,
-            padding: "32px",
+            padding: isMobile ? "24px" : "32px",
             maxWidth: 450,
-            width: "90%"
+            width: "100%"
           }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ color: "#ffffff", marginBottom: 16 }}>Two-Factor Authentication Required</h2>
-            <p style={{ color: "#aeb9ca", marginBottom: 20 }}>
+            <h2 style={{ color: "#ffffff", marginBottom: 16, fontSize: isMobile ? 20 : 24 }}>Two-Factor Authentication Required</h2>
+            <p style={{ color: "#aeb9ca", marginBottom: 20, fontSize: isMobile ? 13 : 14 }}>
               Please enter your 2FA code to continue.
             </p>
             <input
@@ -371,13 +381,13 @@ export default function Settings() {
               onChange={(e) => setTwoFactorInput(e.target.value)}
               style={{
                 width: "100%",
-                padding: "12px",
+                padding: isMobile ? "10px" : "12px",
                 borderRadius: 10,
                 border: "1px solid #2a3a55",
                 background: "rgba(11, 18, 32, 0.85)",
                 color: "#e8e8e8",
                 marginBottom: 20,
-                fontSize: 16,
+                fontSize: isMobile ? 14 : 16,
                 textAlign: "center"
               }}
             />
@@ -390,7 +400,7 @@ export default function Settings() {
                 }}
                 style={{
                   flex: 1,
-                  padding: "12px",
+                  padding: isMobile ? "10px" : "12px",
                   background: "#22324a",
                   border: "none",
                   borderRadius: 10,
@@ -405,7 +415,7 @@ export default function Settings() {
                 disabled={!twoFactorInput}
                 style={{
                   flex: 1,
-                  padding: "12px",
+                  padding: isMobile ? "10px" : "12px",
                   background: twoFactorInput ? "#1f6feb" : "#2a3a55",
                   border: "none",
                   borderRadius: 10,
@@ -421,34 +431,37 @@ export default function Settings() {
         </div>
       )}
 
-      <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-        <div style={{ width: 240, flexShrink: 0 }}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: "12px 16px",
-                background: activeTab === tab.id ? "rgba(31, 111, 235, 0.15)" : "transparent",
-                border: "none",
-                borderLeft: activeTab === tab.id ? "3px solid #1f6feb" : "3px solid transparent",
-                color: activeTab === tab.id ? "#1f6feb" : "#cdd6e5",
-                cursor: "pointer",
-                fontSize: 14,
-                fontWeight: activeTab === tab.id ? 600 : 400,
-                textAlign: "left",
-                marginBottom: 4,
-                borderRadius: 8
-              }}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
+      <div style={{ display: "flex", gap: isMobile ? 16 : 20, flexDirection: isMobile ? "column" : "row" }}>
+        <div style={{ width: isMobile ? "100%" : 240, flexShrink: 0, overflowX: "auto" }}>
+          <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", gap: 4 }}>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  width: isMobile ? "auto" : "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: isMobile ? "10px 16px" : "12px 16px",
+                  background: activeTab === tab.id ? "rgba(31, 111, 235, 0.15)" : "transparent",
+                  border: "none",
+                  borderLeft: !isMobile && activeTab === tab.id ? "3px solid #1f6feb" : "3px solid transparent",
+                  borderBottom: isMobile && activeTab === tab.id ? "2px solid #1f6feb" : "2px solid transparent",
+                  color: activeTab === tab.id ? "#1f6feb" : "#cdd6e5",
+                  cursor: "pointer",
+                  fontSize: isMobile ? 13 : 14,
+                  fontWeight: activeTab === tab.id ? 600 : 400,
+                  textAlign: "left",
+                  borderRadius: isMobile ? 8 : 8,
+                  whiteSpace: "nowrap"
+                }}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -457,13 +470,13 @@ export default function Settings() {
               background: "rgba(17, 24, 38, 0.6)",
               border: "1px solid #2a3a55",
               borderRadius: 16,
-              padding: "24px"
+              padding: isMobile ? "20px" : "24px"
             }}>
-              <h2 style={{ fontSize: 20, marginBottom: 20, color: "#ffffff" }}>Profile Picture</h2>
-              <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 30, flexWrap: "wrap" }}>
+              <h2 style={{ fontSize: isMobile ? 18 : 20, marginBottom: 20, color: "#ffffff" }}>Profile Picture</h2>
+              <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 30, flexDirection: isMobile ? "column" : "row", textAlign: isMobile ? "center" : "left" }}>
                 <div style={{
-                  width: 100,
-                  height: 100,
+                  width: isMobile ? 80 : 100,
+                  height: isMobile ? 80 : 100,
                   borderRadius: "50%",
                   background: "#22324a",
                   display: "flex",
@@ -474,19 +487,20 @@ export default function Settings() {
                   {profilePreview ? (
                     <img src={profilePreview} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
-                    <FaUserEdit size={50} color="#aeb9ca" />
+                    <FaUserEdit size={isMobile ? 40 : 50} color="#aeb9ca" />
                   )}
                 </div>
                 <div>
                   <label style={{
                     display: "inline-block",
                     background: "#1f6feb",
-                    padding: "8px 16px",
+                    padding: isMobile ? "6px 12px" : "8px 16px",
                     borderRadius: 8,
                     color: "white",
                     cursor: "pointer",
-                    fontSize: 14,
-                    marginRight: 12
+                    fontSize: isMobile ? 12 : 14,
+                    marginRight: 12,
+                    marginBottom: isMobile ? 8 : 0
                   }}>
                     Upload Photo
                     <input type="file" accept="image/*" onChange={handleProfilePictureUpload} style={{ display: "none" }} />
@@ -497,11 +511,11 @@ export default function Settings() {
                       style={{
                         background: "#ff8b8b20",
                         border: "1px solid #ff8b8b",
-                        padding: "8px 16px",
+                        padding: isMobile ? "6px 12px" : "8px 16px",
                         borderRadius: 8,
                         color: "#ff8b8b",
                         cursor: "pointer",
-                        fontSize: 14
+                        fontSize: isMobile ? 12 : 14
                       }}
                     >
                       Remove
@@ -510,54 +524,58 @@ export default function Settings() {
                 </div>
               </div>
 
-              <h2 style={{ fontSize: 20, marginBottom: 20, color: "#ffffff" }}>Change Email</h2>
+              <h2 style={{ fontSize: isMobile ? 18 : 20, marginBottom: 20, color: "#ffffff" }}>Change Email</h2>
               <form onSubmit={handleEmailChange} style={{ marginBottom: 30 }}>
-                <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: 14 }}>New Email</label>
+                <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: isMobile ? 12 : 14 }}>New Email</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: isMobile ? "8px 12px" : "10px 12px",
                     borderRadius: 10,
                     border: "1px solid #2a3a55",
                     background: "rgba(11, 18, 32, 0.85)",
                     color: "#e8e8e8",
-                    marginBottom: 16
+                    marginBottom: 16,
+                    fontSize: isMobile ? 13 : 14
                   }}
                   required
                 />
-                <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: 14 }}>Current Password</label>
+                <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: isMobile ? 12 : 14 }}>Current Password</label>
                 <input
                   type="password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: isMobile ? "8px 12px" : "10px 12px",
                     borderRadius: 10,
                     border: "1px solid #2a3a55",
                     background: "rgba(11, 18, 32, 0.85)",
                     color: "#e8e8e8",
-                    marginBottom: 16
+                    marginBottom: 16,
+                    fontSize: isMobile ? 13 : 14
                   }}
                   required
                 />
                 <button type="submit" disabled={loading} style={{
                   background: "#1f6feb",
                   border: "none",
-                  padding: "10px 20px",
+                  padding: isMobile ? "8px 16px" : "10px 20px",
                   borderRadius: 8,
                   color: "white",
                   cursor: "pointer",
-                  fontWeight: 600
+                  fontWeight: 600,
+                  fontSize: isMobile ? 13 : 14,
+                  width: isMobile ? "100%" : "auto"
                 }}>
                   Update Email
                 </button>
               </form>
 
-              <h2 style={{ fontSize: 20, marginBottom: 20, color: "#ffffff", display: "flex", alignItems: "center", gap: 8 }}>
+              <h2 style={{ fontSize: isMobile ? 18 : 20, marginBottom: 20, color: "#ffffff", display: "flex", alignItems: "center", gap: 8 }}>
                 Account Connections
               </h2>
               
@@ -566,21 +584,23 @@ export default function Settings() {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  padding: "16px",
+                  padding: isMobile ? "12px" : "16px",
                   background: "rgba(255, 255, 255, 0.03)",
                   borderRadius: 12,
-                  marginBottom: 12
+                  marginBottom: 12,
+                  flexWrap: "wrap",
+                  gap: 10
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    {provider === "google" && <FcGoogle size={24} />}
-                    {provider === "github" && <FaGithub size={24} color="#ffffff" />}
-                    {provider === "discord" && <FaDiscord size={24} color="#5865f2" />}
-                    <span style={{ color: "#ffffff", textTransform: "capitalize" }}>{provider}</span>
+                    {provider === "google" && <FcGoogle size={isMobile ? 20 : 24} />}
+                    {provider === "github" && <FaGithub size={isMobile ? 20 : 24} color="#ffffff" />}
+                    {provider === "discord" && <FaDiscord size={isMobile ? 20 : 24} color="#5865f2" />}
+                    <span style={{ color: "#ffffff", textTransform: "capitalize", fontSize: isMobile ? 13 : 14 }}>{provider}</span>
                     <span style={{
                       background: "#8bffb320",
                       padding: "2px 8px",
                       borderRadius: 20,
-                      fontSize: 11,
+                      fontSize: isMobile ? 9 : 11,
                       color: "#8bffb3"
                     }}>
                       Connected
@@ -591,11 +611,11 @@ export default function Settings() {
                     style={{
                       background: "transparent",
                       border: "1px solid #ff8b8b",
-                      padding: "6px 12px",
+                      padding: isMobile ? "5px 10px" : "6px 12px",
                       borderRadius: 6,
                       color: "#ff8b8b",
                       cursor: "pointer",
-                      fontSize: 12,
+                      fontSize: isMobile ? 11 : 12,
                       display: "flex",
                       alignItems: "center",
                       gap: 6
@@ -609,8 +629,8 @@ export default function Settings() {
 
               {availableProviders.length > 0 && (
                 <>
-                  <h2 style={{ fontSize: 18, marginTop: 24, marginBottom: 16, color: "#ffffff" }}>Connect Additional Accounts</h2>
-                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                  <h2 style={{ fontSize: isMobile ? 16 : 18, marginTop: 24, marginBottom: 16, color: "#ffffff" }}>Connect Additional Accounts</h2>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start" }}>
                     {availableProviders.map(provider => (
                       <button
                         key={provider}
@@ -621,17 +641,17 @@ export default function Settings() {
                           gap: 8,
                           background: "#22324a",
                           border: "none",
-                          padding: "10px 20px",
+                          padding: isMobile ? "8px 16px" : "10px 20px",
                           borderRadius: 10,
                           color: "white",
                           cursor: "pointer",
-                          fontSize: 14,
+                          fontSize: isMobile ? 12 : 14,
                           fontWeight: 500
                         }}
                       >
-                        {provider === "google" && <FcGoogle size={18} />}
-                        {provider === "github" && <FaGithub size={18} />}
-                        {provider === "discord" && <FaDiscord size={18} />}
+                        {provider === "google" && <FcGoogle size={isMobile ? 16 : 18} />}
+                        {provider === "github" && <FaGithub size={isMobile ? 16 : 18} />}
+                        {provider === "discord" && <FaDiscord size={isMobile ? 16 : 18} />}
                         Connect {provider.charAt(0).toUpperCase() + provider.slice(1)}
                       </button>
                     ))}
@@ -640,7 +660,7 @@ export default function Settings() {
               )}
 
               {connectedProviders.length === 0 && availableProviders.length === 0 && (
-                <p style={{ color: "#aeb9ca", textAlign: "center", padding: 40 }}>
+                <p style={{ color: "#aeb9ca", textAlign: "center", padding: 40, fontSize: isMobile ? 13 : 14 }}>
                   No OAuth connections available
                 </p>
               )}
@@ -652,72 +672,77 @@ export default function Settings() {
               background: "rgba(17, 24, 38, 0.6)",
               border: "1px solid #2a3a55",
               borderRadius: 16,
-              padding: "24px"
+              padding: isMobile ? "20px" : "24px"
             }}>
-              <h2 style={{ fontSize: 20, marginBottom: 20, color: "#ffffff" }}>Change Password</h2>
+              <h2 style={{ fontSize: isMobile ? 18 : 20, marginBottom: 20, color: "#ffffff" }}>Change Password</h2>
               <form onSubmit={handlePasswordChange} style={{ marginBottom: 40 }}>
-                <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: 14 }}>Current Password</label>
+                <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: isMobile ? 12 : 14 }}>Current Password</label>
                 <input
                   type="password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: isMobile ? "8px 12px" : "10px 12px",
                     borderRadius: 10,
                     border: "1px solid #2a3a55",
                     background: "rgba(11, 18, 32, 0.85)",
                     color: "#e8e8e8",
-                    marginBottom: 16
+                    marginBottom: 16,
+                    fontSize: isMobile ? 13 : 14
                   }}
                   required
                 />
-                <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: 14 }}>New Password (min. 8 characters)</label>
+                <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: isMobile ? 12 : 14 }}>New Password (min. 8 characters)</label>
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: isMobile ? "8px 12px" : "10px 12px",
                     borderRadius: 10,
                     border: "1px solid #2a3a55",
                     background: "rgba(11, 18, 32, 0.85)",
                     color: "#e8e8e8",
-                    marginBottom: 16
+                    marginBottom: 16,
+                    fontSize: isMobile ? 13 : 14
                   }}
                   required
                 />
-                <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: 14 }}>Confirm New Password</label>
+                <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: isMobile ? 12 : 14 }}>Confirm New Password</label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: isMobile ? "8px 12px" : "10px 12px",
                     borderRadius: 10,
                     border: "1px solid #2a3a55",
                     background: "rgba(11, 18, 32, 0.85)",
                     color: "#e8e8e8",
-                    marginBottom: 16
+                    marginBottom: 16,
+                    fontSize: isMobile ? 13 : 14
                   }}
                   required
                 />
                 <button type="submit" disabled={loading} style={{
                   background: "#1f6feb",
                   border: "none",
-                  padding: "10px 20px",
+                  padding: isMobile ? "8px 16px" : "10px 20px",
                   borderRadius: 8,
                   color: "white",
                   cursor: "pointer",
-                  fontWeight: 600
+                  fontWeight: 600,
+                  fontSize: isMobile ? 13 : 14,
+                  width: isMobile ? "100%" : "auto"
                 }}>
                   Update Password
                 </button>
               </form>
 
-              <h2 style={{ fontSize: 20, marginBottom: 20, color: "#ffffff", display: "flex", alignItems: "center", gap: 8 }}>
+              <h2 style={{ fontSize: isMobile ? 18 : 20, marginBottom: 20, color: "#ffffff", display: "flex", alignItems: "center", gap: 8 }}>
                 Two-Factor Authentication
               </h2>
               
@@ -730,18 +755,20 @@ export default function Settings() {
                       style={{
                         background: "#1f6feb",
                         border: "none",
-                        padding: "10px 20px",
+                        padding: isMobile ? "8px 16px" : "10px 20px",
                         borderRadius: 8,
                         color: "white",
                         cursor: "pointer",
-                        fontWeight: 600
+                        fontWeight: 600,
+                        fontSize: isMobile ? 13 : 14,
+                        width: isMobile ? "100%" : "auto"
                       }}
                     >
                       Enable 2FA
                     </button>
                   ) : (
                     <div>
-                      <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+                      <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
                         <button
                           onClick={() => setShowSecretKey(false)}
                           style={{
@@ -750,10 +777,11 @@ export default function Settings() {
                             gap: 8,
                             background: !showSecretKey ? "#1f6feb" : "#22324a",
                             border: "none",
-                            padding: "8px 16px",
+                            padding: isMobile ? "6px 12px" : "8px 16px",
                             borderRadius: 8,
                             color: "white",
-                            cursor: "pointer"
+                            cursor: "pointer",
+                            fontSize: isMobile ? 12 : 14
                           }}
                         >
                           <FaQrcode size={16} />
@@ -767,10 +795,11 @@ export default function Settings() {
                             gap: 8,
                             background: showSecretKey ? "#1f6feb" : "#22324a",
                             border: "none",
-                            padding: "8px 16px",
+                            padding: isMobile ? "6px 12px" : "8px 16px",
                             borderRadius: 8,
                             color: "white",
-                            cursor: "pointer"
+                            cursor: "pointer",
+                            fontSize: isMobile ? 12 : 14
                           }}
                         >
                           <FaKey size={16} />
@@ -780,8 +809,8 @@ export default function Settings() {
 
                       {!showSecretKey ? (
                         <>
-                          <p style={{ color: "#aeb9ca", marginBottom: 16 }}>Scan this QR code with your authenticator app</p>
-                          {twoFactorQR && <img src={twoFactorQR} alt="2FA QR Code" style={{ marginBottom: 16, background: "white", padding: 10, borderRadius: 8 }} />}
+                          <p style={{ color: "#aeb9ca", marginBottom: 16, fontSize: isMobile ? 12 : 14 }}>Scan this QR code with your authenticator app</p>
+                          {twoFactorQR && <img src={twoFactorQR} alt="2FA QR Code" style={{ marginBottom: 16, background: "white", padding: 10, borderRadius: 8, maxWidth: "100%" }} />}
                         </>
                       ) : (
                         <div style={{
@@ -791,13 +820,13 @@ export default function Settings() {
                           padding: 16,
                           marginBottom: 16
                         }}>
-                          <p style={{ color: "#aeb9ca", marginBottom: 12 }}>Enter this secret key manually in your authenticator app:</p>
+                          <p style={{ color: "#aeb9ca", marginBottom: 12, fontSize: isMobile ? 12 : 14 }}>Enter this secret key manually in your authenticator app:</p>
                           <div style={{
                             background: "#0b0f14",
-                            padding: "12px",
+                            padding: isMobile ? "10px" : "12px",
                             borderRadius: 8,
                             fontFamily: "monospace",
-                            fontSize: 14,
+                            fontSize: isMobile ? 11 : 14,
                             color: "#8bffb3",
                             wordBreak: "break-all",
                             marginBottom: 12
@@ -813,7 +842,7 @@ export default function Settings() {
                               borderRadius: 6,
                               color: "white",
                               cursor: "pointer",
-                              fontSize: 12
+                              fontSize: isMobile ? 11 : 12
                             }}
                           >
                             Copy Secret Key
@@ -828,12 +857,13 @@ export default function Settings() {
                         onChange={(e) => setTwoFactorCode(e.target.value)}
                         style={{
                           width: "100%",
-                          padding: "10px 12px",
+                          padding: isMobile ? "8px 12px" : "10px 12px",
                           borderRadius: 10,
                           border: "1px solid #2a3a55",
                           background: "rgba(11, 18, 32, 0.85)",
                           color: "#e8e8e8",
-                          marginBottom: 16
+                          marginBottom: 16,
+                          fontSize: isMobile ? 13 : 14
                         }}
                       />
                       <button
@@ -842,11 +872,13 @@ export default function Settings() {
                         style={{
                           background: "#1f6feb",
                           border: "none",
-                          padding: "10px 20px",
+                          padding: isMobile ? "8px 16px" : "10px 20px",
                           borderRadius: 8,
                           color: "white",
                           cursor: "pointer",
-                          fontWeight: 600
+                          fontWeight: 600,
+                          fontSize: isMobile ? 13 : 14,
+                          width: isMobile ? "100%" : "auto"
                         }}
                       >
                         Verify and Enable
@@ -856,9 +888,9 @@ export default function Settings() {
                 </div>
               ) : (
                 <div>
-                  <p style={{ color: "#8bffb3", marginBottom: 16 }}>✓ Two-factor authentication is enabled</p>
+                  <p style={{ color: "#8bffb3", marginBottom: 16, fontSize: isMobile ? 13 : 14 }}>✓ Two-factor authentication is enabled</p>
                   <div style={{ marginBottom: 16 }}>
-                    <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: 14 }}>Enter 2FA code to disable</label>
+                    <label style={{ display: "block", marginBottom: 8, color: "#b9c2cf", fontSize: isMobile ? 12 : 14 }}>Enter 2FA code to disable</label>
                     <input
                       type="text"
                       placeholder="Enter 6-digit code"
@@ -866,12 +898,13 @@ export default function Settings() {
                       onChange={(e) => setTwoFactorCode(e.target.value)}
                       style={{
                         width: "100%",
-                        padding: "10px 12px",
+                        padding: isMobile ? "8px 12px" : "10px 12px",
                         borderRadius: 10,
                         border: "1px solid #2a3a55",
                         background: "rgba(11, 18, 32, 0.85)",
                         color: "#e8e8e8",
-                        marginBottom: 16
+                        marginBottom: 16,
+                        fontSize: isMobile ? 13 : 14
                       }}
                     />
                   </div>
@@ -881,12 +914,14 @@ export default function Settings() {
                     style={{
                       background: "#ff8b8b20",
                       border: "1px solid #ff8b8b",
-                      padding: "10px 20px",
+                      padding: isMobile ? "8px 16px" : "10px 20px",
                       borderRadius: 8,
                       color: "#ff8b8b",
                       cursor: twoFactorCode ? "pointer" : "not-allowed",
                       fontWeight: 600,
-                      opacity: twoFactorCode ? 1 : 0.5
+                      opacity: twoFactorCode ? 1 : 0.5,
+                      fontSize: isMobile ? 13 : 14,
+                      width: isMobile ? "100%" : "auto"
                     }}
                   >
                     Disable 2FA
@@ -901,18 +936,18 @@ export default function Settings() {
               background: "rgba(17, 24, 38, 0.6)",
               border: "1px solid #ff8b8b",
               borderRadius: 16,
-              padding: "24px"
+              padding: isMobile ? "20px" : "24px"
             }}>
-              <h2 style={{ fontSize: 20, marginBottom: 16, color: "#ff8b8b" }}>Delete Account</h2>
-              <p style={{ color: "#aeb9ca", marginBottom: 16 }}>
+              <h2 style={{ fontSize: isMobile ? 18 : 20, marginBottom: 16, color: "#ff8b8b" }}>Delete Account</h2>
+              <p style={{ color: "#aeb9ca", marginBottom: 16, fontSize: isMobile ? 13 : 14 }}>
                 This action is permanent and cannot be undone. All your data will be permanently deleted.
               </p>
               {user?.twoFactorEnabled && (
-                <p style={{ color: "#ffb86b", marginBottom: 16, fontSize: 14 }}>
+                <p style={{ color: "#ffb86b", marginBottom: 16, fontSize: isMobile ? 12 : 14 }}>
                   ⚠️ You will need to provide your 2FA code to delete your account.
                 </p>
               )}
-              <p style={{ color: "#ffb86b", marginBottom: 20, fontSize: 14 }}>
+              <p style={{ color: "#ffb86b", marginBottom: 20, fontSize: isMobile ? 12 : 14 }}>
                 Type <strong>DELETE ACCOUNT</strong> below to confirm.
               </p>
               <input
@@ -922,16 +957,17 @@ export default function Settings() {
                 placeholder="DELETE ACCOUNT"
                 style={{
                   width: "100%",
-                  padding: "12px",
+                  padding: isMobile ? "10px" : "12px",
                   borderRadius: 10,
                   border: "1px solid #ff8b8b",
                   background: "rgba(11, 18, 32, 0.85)",
                   color: "#e8e8e8",
                   marginBottom: 16,
-                  fontFamily: "monospace"
+                  fontFamily: "monospace",
+                  fontSize: isMobile ? 13 : 14
                 }}
               />
-              {deleteError && <p style={{ color: "#ff8b8b", fontSize: 14, marginBottom: 16 }}>{deleteError}</p>}
+              {deleteError && <p style={{ color: "#ff8b8b", fontSize: isMobile ? 12 : 14, marginBottom: 16 }}>{deleteError}</p>}
               <button
                 onClick={handleDeleteAccount}
                 disabled={loading || deleteConfirm !== "DELETE ACCOUNT"}
@@ -939,12 +975,13 @@ export default function Settings() {
                   width: "100%",
                   background: "#ff8b8b",
                   border: "none",
-                  padding: "12px",
+                  padding: isMobile ? "10px" : "12px",
                   borderRadius: 10,
                   color: "white",
                   cursor: deleteConfirm === "DELETE ACCOUNT" ? "pointer" : "not-allowed",
                   fontWeight: 600,
-                  opacity: deleteConfirm === "DELETE ACCOUNT" ? 1 : 0.5
+                  opacity: deleteConfirm === "DELETE ACCOUNT" ? 1 : 0.5,
+                  fontSize: isMobile ? 13 : 14
                 }}
               >
                 Permanently Delete Account
@@ -957,17 +994,17 @@ export default function Settings() {
               background: "rgba(17, 24, 38, 0.6)",
               border: "1px solid #2a3a55",
               borderRadius: 16,
-              padding: "24px"
+              padding: isMobile ? "20px" : "24px"
             }}>
-              <h2 style={{ fontSize: 20, marginBottom: 20, color: "#ffffff", display: "flex", alignItems: "center", gap: 8 }}>
+              <h2 style={{ fontSize: isMobile ? 18 : 20, marginBottom: 20, color: "#ffffff", display: "flex", alignItems: "center", gap: 8 }}>
                 Appearance Preferences
               </h2>
 
               <div style={{ marginBottom: 30 }}>
-                <label style={{ display: "block", marginBottom: 12, color: "#b9c2cf", fontSize: 14, fontWeight: 500 }}>
+                <label style={{ display: "block", marginBottom: 12, color: "#b9c2cf", fontSize: isMobile ? 12 : 14, fontWeight: 500 }}>
                   Theme Mode
                 </label>
-                <div style={{ display: "flex", gap: 12 }}>
+                <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
                   <button
                     onClick={() => setPrefTheme("light")}
                     style={{
@@ -976,14 +1013,14 @@ export default function Settings() {
                       alignItems: "center",
                       justifyContent: "center",
                       gap: 8,
-                      padding: "12px",
+                      padding: isMobile ? "10px" : "12px",
                       background: prefTheme === "light" ? "#1f6feb" : "#22324a",
                       border: prefTheme === "light" ? "1px solid #1f6feb" : "1px solid #2a3a55",
                       borderRadius: 10,
                       color: "white",
                       cursor: "pointer",
                       fontWeight: prefTheme === "light" ? 600 : 400,
-                      transition: "all 0.2s"
+                      fontSize: isMobile ? 13 : 14
                     }}
                   >
                     <FaSun size={16} />
@@ -997,14 +1034,14 @@ export default function Settings() {
                       alignItems: "center",
                       justifyContent: "center",
                       gap: 8,
-                      padding: "12px",
+                      padding: isMobile ? "10px" : "12px",
                       background: prefTheme === "dark" ? "#1f6feb" : "#22324a",
                       border: prefTheme === "dark" ? "1px solid #1f6feb" : "1px solid #2a3a55",
                       borderRadius: 10,
                       color: "white",
                       cursor: "pointer",
                       fontWeight: prefTheme === "dark" ? 600 : 400,
-                      transition: "all 0.2s"
+                      fontSize: isMobile ? 13 : 14
                     }}
                   >
                     <FaMoon size={16} />
@@ -1014,24 +1051,23 @@ export default function Settings() {
               </div>
 
               <div style={{ marginBottom: 30 }}>
-                <label style={{ display: "block", marginBottom: 12, color: "#b9c2cf", fontSize: 14, fontWeight: 500 }}>
+                <label style={{ display: "block", marginBottom: 12, color: "#b9c2cf", fontSize: isMobile ? 12 : 14, fontWeight: 500 }}>
                   Background Blur
                 </label>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start" }}>
                   {blurOptions.map((option) => (
                     <button
                       key={option.value}
                       onClick={() => setPrefBlur(option.value)}
                       style={{
-                        padding: "8px 16px",
+                        padding: isMobile ? "6px 12px" : "8px 16px",
                         background: prefBlur === option.value ? "#1f6feb" : "#22324a",
                         border: prefBlur === option.value ? "1px solid #1f6feb" : "1px solid #2a3a55",
                         borderRadius: 8,
                         color: "white",
                         cursor: "pointer",
-                        fontSize: 13,
-                        fontWeight: prefBlur === option.value ? 600 : 400,
-                        transition: "all 0.2s"
+                        fontSize: isMobile ? 11 : 13,
+                        fontWeight: prefBlur === option.value ? 600 : 400
                       }}
                     >
                       {option.label}
@@ -1045,14 +1081,15 @@ export default function Settings() {
                 disabled={savingPrefs}
                 style={{
                   width: "100%",
-                  padding: "12px",
+                  padding: isMobile ? "10px" : "12px",
                   background: savingPrefs ? "#2a3a55" : "#1f6feb",
                   border: "none",
                   borderRadius: 10,
                   color: "white",
                   cursor: savingPrefs ? "not-allowed" : "pointer",
                   fontWeight: 600,
-                  opacity: savingPrefs ? 0.7 : 1
+                  opacity: savingPrefs ? 0.7 : 1,
+                  fontSize: isMobile ? 13 : 14
                 }}
               >
                 {savingPrefs ? "Saving..." : "Save Preferences"}
