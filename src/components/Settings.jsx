@@ -4,7 +4,7 @@ import { useTheme } from "../App";
 import { apiRequest } from "../api";
 import QRCode from "qrcode";
 import { FcGoogle } from "react-icons/fc";
-import { FaGithub, FaDiscord, FaTrash, FaUserEdit, FaLock, FaShieldAlt, FaLink, FaUnlink, FaKey, FaQrcode, FaTachometerAlt, FaSun, FaMoon } from "react-icons/fa";
+import { FaGithub, FaDiscord, FaTrash, FaUserEdit, FaLock, FaShieldAlt, FaLink, FaUnlink, FaKey, FaQrcode, FaTachometerAlt, FaSun, FaMoon, FaCreditCard, FaCalendarAlt, FaExternalLinkAlt, FaInfoCircle } from "react-icons/fa";
 
 export default function Settings() {
   const { user, setUser, logout } = useAuth();
@@ -17,6 +17,9 @@ export default function Settings() {
   const [pendingData, setPendingData] = useState(null);
   const [twoFactorInput, setTwoFactorInput] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [billingInfo, setBillingInfo] = useState(null);
+  const [loadingBilling, setLoadingBilling] = useState(false);
+  const [portalUrl, setPortalUrl] = useState(null);
 
   const [profilePicture, setProfilePicture] = useState(null);
   const [profilePreview, setProfilePreview] = useState(user?.profilePicture || null);
@@ -46,14 +49,6 @@ export default function Settings() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const blurOptions = [
-    { value: 0, label: "None" },
-    { value: 1, label: "Light" },
-    { value: 2, label: "Normal" },
-    { value: 3, label: "Medium" },
-    { value: 4, label: "Heavy" }
-  ];
-
   useEffect(() => {
     if (user?.preferences) {
       if (user.preferences.theme) {
@@ -66,6 +61,36 @@ export default function Settings() {
       }
     }
   }, [user]);
+
+  useEffect(() => {
+    const fetchBillingInfo = async () => {
+      if (user?.plan === "premium") {
+        setLoadingBilling(true);
+        try {
+          const data = await apiRequest("/api/users/billing", {
+            token: localStorage.getItem("openos_access")
+          });
+          setBillingInfo(data);
+          if (data.stripePortalUrl) {
+            setPortalUrl(data.stripePortalUrl);
+          }
+        } catch (err) {
+          console.error("Failed to fetch billing info", err);
+        } finally {
+          setLoadingBilling(false);
+        }
+      }
+    };
+    fetchBillingInfo();
+  }, [user]);
+
+  const blurOptions = [
+    { value: 0, label: "None" },
+    { value: 1, label: "Light" },
+    { value: 2, label: "Normal" },
+    { value: 3, label: "Medium" },
+    { value: 4, label: "Heavy" }
+  ];
 
   const savePreferences = async () => {
     setSavingPrefs(true);
@@ -310,9 +335,22 @@ export default function Settings() {
     executeWith2FA('deleteAccount');
   };
 
+  const handleManageBilling = () => {
+    if (portalUrl) {
+      window.location.href = portalUrl;
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
   const tabs = [
     { id: "account", label: "Manage Account", icon: <FaUserEdit size={16} /> },
     { id: "security", label: "Security", icon: <FaLock size={16} /> },
+    { id: "billing", label: "Billing", icon: <FaCreditCard size={16} /> },
     { id: "delete", label: "Delete Account", icon: <FaTrash size={16} /> },
     { id: "preferences", label: "Preferences", icon: <FaTachometerAlt size={16} /> }
   ];
@@ -926,6 +964,141 @@ export default function Settings() {
                   >
                     Disable 2FA
                   </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === "billing" && (
+            <div style={{
+              background: "rgba(17, 24, 38, 0.6)",
+              border: "1px solid #2a3a55",
+              borderRadius: 16,
+              padding: isMobile ? "20px" : "24px"
+            }}>
+              <h2 style={{ fontSize: isMobile ? 18 : 20, marginBottom: 20, color: "#ffffff", display: "flex", alignItems: "center", gap: 8 }}>
+                Billing Information
+              </h2>
+              
+              {loadingBilling ? (
+                <div style={{ textAlign: "center", padding: 40, color: "#aeb9ca" }}>
+                  Loading billing information...
+                </div>
+              ) : user?.plan !== "premium" ? (
+                <div style={{
+                  background: "rgba(255, 139, 139, 0.05)",
+                  borderRadius: 12,
+                  padding: 24,
+                  textAlign: "center"
+                }}>
+                  <p style={{ color: "#aeb9ca", marginBottom: 16 }}>
+                    You are currently on the Free plan.
+                  </p>
+                  <a href="/premium" className="btn" style={{ display: "inline-block" }}>
+                    Upgrade to Premium
+                  </a>
+                </div>
+              ) : billingInfo ? (
+                <div>
+                  <div style={{
+                    background: "rgba(139, 255, 179, 0.05)",
+                    borderRadius: 12,
+                    padding: 20,
+                    marginBottom: 24,
+                    border: "1px solid rgba(139, 255, 179, 0.2)"
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+                      <FaCalendarAlt size={20} color="#8bffb3" />
+                      <div>
+                        <div style={{ color: "#ffffff", fontWeight: 600 }}>Current Plan: Premium</div>
+                        <div style={{ color: "#aeb9ca", fontSize: 13, marginTop: 4 }}>
+                          Duration: 1 Month (Renewing Monthly)
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {billingInfo.expiresAt && (
+                      <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid rgba(42, 58, 85, 0.5)" }}>
+                        <div style={{ color: "#aeb9ca", fontSize: 13 }}>
+                          Next Billing Date: <strong style={{ color: "#ffffff" }}>{formatDate(billingInfo.expiresAt)}</strong>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {billingInfo.paymentMethod === "stripe" ? (
+                    <div>
+                      <div style={{
+                        background: "rgba(31, 111, 235, 0.05)",
+                        borderRadius: 12,
+                        padding: 20,
+                        marginBottom: 20
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                          <FaCreditCard size={18} color="#1f6feb" />
+                          <span style={{ color: "#ffffff", fontWeight: 500 }}>Stripe Subscription</span>
+                        </div>
+                        <p style={{ color: "#aeb9ca", fontSize: 13, marginBottom: 20 }}>
+                          Your subscription is managed through Stripe. You can update your payment method or cancel your subscription through here.
+                        </p>
+                        <button
+                          onClick={handleManageBilling}
+                          style={{
+                            width: "100%",
+                            padding: "12px",
+                            background: "#1f6feb",
+                            border: "none",
+                            borderRadius: 10,
+                            color: "white",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 8
+                          }}
+                        >
+                          <FaExternalLinkAlt size={14} />
+                          Manage Subscription
+                        </button>
+                      </div>
+                    </div>
+                  ) : billingInfo.paymentMethod === "crypto" ? (
+                    <div>
+                      <div style={{
+                        background: "rgba(247, 147, 26, 0.05)",
+                        borderRadius: 12,
+                        padding: 20,
+                        marginBottom: 20
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                          <FaInfoCircle size={18} color="#f7931a" />
+                          <span style={{ color: "#ffffff", fontWeight: 500 }}>Cryptocurrency Payment</span>
+                        </div>
+                        <p style={{ color: "#aeb9ca", fontSize: 13, marginBottom: 16 }}>
+                          You paid with Monero (XMR).
+                        </p>
+                        <div style={{
+                          background: "rgba(247, 147, 26, 0.1)",
+                          borderRadius: 8,
+                          padding: 12,
+                          marginBottom: 16
+                        }}>
+                          <p style={{ color: "#ffb86b", fontSize: 13, margin: 0 }}>
+                            Note: Cryptocurrency payments do not allow for automatic monthly renewals. To continue using Premium after expiration, please go through the buying process again.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: "center", padding: 40, color: "#aeb9ca" }}>
+                      No billing information available.
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div style={{ textAlign: "center", padding: 40, color: "#aeb9ca" }}>
+                  Unable to load billing information.
                 </div>
               )}
             </div>
