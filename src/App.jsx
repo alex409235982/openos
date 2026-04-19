@@ -5,6 +5,7 @@ import Footer from "./components/Footer.jsx";
 import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
 import Distros from "./pages/Distros.jsx";
+import Premium from "./pages/Premium.jsx";
 import Terms from "./pages/Terms.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Login from "./pages/Login.jsx";
@@ -86,6 +87,17 @@ function AppContent() {
             <div className="container pageContent">
               <Nav />
               <Distros />
+            </div>
+            <div className="container">
+              <Footer />
+            </div>
+          </>
+        } />
+        <Route path="/premium" element={
+          <>
+            <div className="container pageContent">
+              <Nav />
+              <Premium />
             </div>
             <div className="container">
               <Footer />
