@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { apiRequest } from "../api";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
-export default function Distros() {
+export default function Distros({ onLaunchSession }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDistro, setSelectedDistro] = useState(null);
@@ -14,6 +15,7 @@ export default function Distros() {
   const [glossaryLoading, setGlossaryLoading] = useState(false);
   const [launching, setLaunching] = useState(false);
   const [launchStatus, setLaunchStatus] = useState('');
+  const [favorites, setFavorites] = useState(new Set());
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -28,6 +30,10 @@ export default function Distros() {
         
         const data = await apiRequest(`/api/distros?${params.toString()}`);
         setDistributions(data);
+        
+        if (user) {
+          await fetchFavoritesStatus(data);
+        }
       } catch (err) {
         console.error('Failed to fetch distributions');
       } finally {
@@ -36,7 +42,59 @@ export default function Distros() {
     };
 
     fetchDistros();
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory, searchTerm, user]);
+
+  const fetchFavoritesStatus = async (distros) => {
+    try {
+      const favoriteStatuses = await Promise.all(
+        distros.map(async (distro) => {
+          try {
+            const data = await apiRequest(`/api/favorites/check/${distro._id}`, {
+              token: localStorage.getItem("openos_access")
+            });
+            return { id: distro._id, favorited: data.favorited };
+          } catch {
+            return { id: distro._id, favorited: false };
+          }
+        })
+      );
+      
+      const favoritedSet = new Set(
+        favoriteStatuses.filter(f => f.favorited).map(f => f.id)
+      );
+      setFavorites(favoritedSet);
+    } catch (err) {
+      console.error("Failed to fetch favorites status", err);
+    }
+  };
+
+  const handleToggleFavorite = async (distroId, e) => {
+    e.stopPropagation();
+    
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    
+    try {
+      const data = await apiRequest(`/api/favorites/${distroId}`, {
+        method: "POST",
+        token: localStorage.getItem("openos_access")
+      });
+      
+      if (data.favorited) {
+        setFavorites(prev => new Set([...prev, distroId]));
+      } else {
+        setFavorites(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(distroId);
+          return newSet;
+        });
+      }
+    } catch (err) {
+      console.error("Failed to toggle favorite", err);
+    }
+  };
 
   useEffect(() => {
     const fetchGlossary = async () => {
@@ -82,10 +140,16 @@ export default function Distros() {
         body: { distroId: selectedDistro._id }
       });
       
-      navigate('/dashboard', { state: { newSession: response } });
+      if (onLaunchSession) {
+        onLaunchSession(selectedDistro, null, response);
+        setSelectedDistro(null);
+      } else {
+        navigate('/dashboard', { state: { newSession: response } });
+      }
     } catch (err) {
       console.error("Failed to launch session:", err);
       alert(err.message || "Failed to launch session. Please try again.");
+    } finally {
       setLaunching(false);
     }
   };
@@ -182,7 +246,8 @@ export default function Distros() {
                     gap: 16,
                     alignItems: 'center',
                     transition: 'transform 0.2s, border-color 0.2s',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    position: 'relative'
                   }}
                   onMouseEnter={(e) => {
                     if (!isMobile) {
@@ -197,6 +262,46 @@ export default function Distros() {
                     }
                   }}
                 >
+                  <button
+                    onClick={(e) => handleToggleFavorite(distro._id, e)}
+                    style={{
+                      position: 'absolute',
+                      top: 12,
+                      right: 12,
+                      background: favorites.has(distro._id) ? '#ff6b6b' : 'rgba(30, 35, 48, 0.9)',
+                      border: favorites.has(distro._id) ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '50%',
+                      width: 34,
+                      height: 34,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      zIndex: 2,
+                      boxShadow: favorites.has(distro._id) ? '0 2px 8px rgba(255, 107, 107, 0.4)' : 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      if (!favorites.has(distro._id)) {
+                        e.currentTarget.style.background = 'rgba(255, 107, 107, 0.8)';
+                        e.currentTarget.style.border = 'none';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      if (!favorites.has(distro._id)) {
+                        e.currentTarget.style.background = 'rgba(30, 35, 48, 0.9)';
+                        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                      }
+                    }}
+                  >
+                    {favorites.has(distro._id) ? (
+                      <FaHeart size={18} color="#ffffff" />
+                    ) : (
+                      <FaRegHeart size={18} color="#ffffff" />
+                    )}
+                  </button>
                   <img
                     src={distro.logo}
                     alt={distro.name}
@@ -208,8 +313,12 @@ export default function Distros() {
                     }}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3 style={{ margin: '0 0 4px 0', fontSize: 18, wordBreak: 'break-word' }}>{distro.name}</h3>
-                    <p className="p muted" style={{ margin: 0, fontSize: 13, wordBreak: 'break-word' }}>{distro.description}</p>
+                    <h3 style={{ margin: '0 0 4px 0', fontSize: 18, wordBreak: 'break-word', paddingRight: 32 }}>
+                      {distro.name}
+                    </h3>
+                    <p className="p muted" style={{ margin: 0, fontSize: 13, wordBreak: 'break-word' }}>
+                      {distro.description}
+                    </p>
                     <div style={{ marginTop: 8 }}>
                       <span className="badge" style={{ fontSize: 11 }}>
                         {categories.find(c => c.id === distro.category)?.label.split(' / ')[0] || distro.category}
@@ -344,8 +453,12 @@ export default function Distros() {
                     }} 
                   />
                   <div>
-                    <h2 style={{ fontSize: isMobile ? 22 : 24, marginBottom: 16, color: '#ffffff' }}>About {selectedDistro.name}</h2>
-                    <p className="p" style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.7, wordBreak: 'break-word' }}>{selectedDistro.longDescription}</p>
+                    <h2 style={{ fontSize: isMobile ? 22 : 24, marginBottom: 16, color: '#ffffff' }}>
+                      About {selectedDistro.name}
+                    </h2>
+                    <p className="p" style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.7, wordBreak: 'break-word' }}>
+                      {selectedDistro.longDescription}
+                    </p>
                   </div>
                 </div>
                 
@@ -595,8 +708,12 @@ export default function Distros() {
                       }
                     }}
                   >
-                    <h3 style={{ margin: '0 0 8px 0', fontSize: isMobile ? 15 : 16, color: '#ffffff', wordBreak: 'break-word' }}>{item.term}</h3>
-                    <p className="p muted" style={{ margin: 0, fontSize: isMobile ? 12 : 13, wordBreak: 'break-word' }}>{item.definition}</p>
+                    <h3 style={{ margin: '0 0 8px 0', fontSize: isMobile ? 15 : 16, color: '#ffffff', wordBreak: 'break-word' }}>
+                      {item.term}
+                    </h3>
+                    <p className="p muted" style={{ margin: 0, fontSize: isMobile ? 12 : 13, wordBreak: 'break-word' }}>
+                      {item.definition}
+                    </p>
                   </a>
                 ))}
               </div>

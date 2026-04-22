@@ -4,10 +4,11 @@ import Sessions from "../components/Sessions";
 import Distros from "../components/Distros";
 import Settings from "../components/Settings";
 import Tutorials from "../components/Tutorials";
+import Favorites from "../components/Favorites";
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import { useAuth } from "../auth/AuthContext";
-import { FaDesktop, FaTh, FaCog, FaUserCircle, FaCrown, FaBook, FaBars, FaTimes } from "react-icons/fa";
+import { FaDesktop, FaTh, FaCog, FaUserCircle, FaCrown, FaBook, FaHeart, FaBars, FaTimes } from "react-icons/fa";
 
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState(() => {
@@ -53,6 +54,8 @@ export default function Dashboard() {
     switch (activeSection) {
       case "sessions":
         return <Sessions user={user} newSessionData={newSessionData} onLaunchSession={handleLaunchSession} />;
+      case "favorites":
+        return <Favorites onLaunchSession={handleLaunchSession} onSwitchToDistros={() => setActiveSection("distros")} />;
       case "distros":
         return <Distros onLaunchSession={handleLaunchSession} user={user} />;
       case "tutorials":
@@ -66,6 +69,7 @@ export default function Dashboard() {
 
   const menuItems = [
     { id: "sessions", label: "Sessions", icon: <FaDesktop size={18} /> },
+    { id: "favorites", label: "Favorites", icon: <FaHeart size={18} /> },
     { id: "distros", label: "Distros", icon: <FaTh size={18} /> },
     { id: "tutorials", label: "Tutorials", icon: <FaBook size={18} /> },
     { id: "settings", label: "Settings", icon: <FaCog size={18} /> }
