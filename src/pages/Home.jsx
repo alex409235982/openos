@@ -59,14 +59,36 @@ export default function Home() {
   return (
     <>
       <div className="card">
-        <h1 className="h1">Try Before You Install</h1>
-        <p className="p">
-          OPENOS lets you explore Linux distributions safely from the browser.
-          No installation and no risk to your personal device.
-        </p>
-        <div className="row" style={{ marginTop: 14 }}>
-          <Link className="btn" to="/signup">Launch Demo</Link>
-          <Link className="btn secondary" to="/about">Learn More</Link>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
+          <div style={{ flex: 1 }}>
+            <h1 className="h1">Try Before You Install</h1>
+            <p className="p">
+              OPENOS lets you explore Linux distributions safely from the browser.
+              No installation and no risk to your personal device.
+            </p>
+            <div className="row" style={{ marginTop: 14 }}>
+              <Link className="btn" to="/signup">Launch Demo</Link>
+              <Link className="btn secondary" to="/about">Learn More</Link>
+            </div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <img 
+              src="https://raw.githubusercontent.com/alex409235982/openos-assets/refs/heads/main/Tux.gif" 
+              style={{ 
+                width: isMobile ? '80px' : '100px', 
+                height: 'auto',
+                objectFit: 'contain'
+              }} 
+            />
+            <div style={{ 
+              fontSize: isMobile ? '10px' : '12px', 
+              color: '#aeb9ca', 
+              marginTop: '8px',
+              fontWeight: 500
+            }}>
+              Tux (Linux Mascot)
+            </div>
+          </div>
         </div>
       </div>
 
