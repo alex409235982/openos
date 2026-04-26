@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { FaLock, FaGift, FaSyncAlt, FaGamepad, FaUsers, FaDesktop, FaFeatherAlt, FaRocket, FaShieldAlt } from "react-icons/fa";
 
 export default function Home() {
   const [currentReasonIndex, setCurrentReasonIndex] = useState(0);
@@ -15,32 +16,32 @@ export default function Home() {
 
   const reasons = [
     {
-      emoji: "🔓",
+      icon: <FaFeatherAlt size={48} />,
       title: "Freedom & Open Source",
       description: "Linux gives you complete control over your system. You can view, modify, and share the code however you want."
     },
     {
-      emoji: "🛡️",
+      icon: <FaLock size={48} />,
       title: "Security & Privacy",
       description: "There are better permission systems and zero telemetry spying on your activities."
     },
     {
-      emoji: "💸",
+      icon: <FaGift size={48} />,
       title: "Completely Free",
       description: "No license fees and no subscriptions. Linux is free for everyone, forever."
     },
     {
-      emoji: "🔄",
+      icon: <FaSyncAlt size={48} />,
       title: "Revive Old Hardware",
       description: "Give old computers a second life. Linux runs fast on hardware that Windows abandoned."
     },
     {
-      emoji: "🎮",
+      icon: <FaGamepad size={48} />,
       title: "Gaming Ready",
       description: "You can use tools like Proton to play thousands of Windows games on Linux. Start up an emulator while you are at it!"
     },
     {
-      emoji: "🌍",
+      icon: <FaUsers size={48} />,
       title: "Linux is Community Driven",
       description: "Join millions of users and developers who believe in open source and collaboration."
     }
@@ -226,7 +227,9 @@ export default function Home() {
               justifyContent: "center",
               marginBottom: 20
             }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>{currentReason.emoji}</div>
+              <div style={{ fontSize: 48, marginBottom: 12, color: "#1f6feb", display: "flex", justifyContent: "center" }}>
+                {currentReason.icon}
+              </div>
               <h4 style={{ fontSize: 18, margin: "0 0 12px 0", color: "#8bffb3" }}>
                 {currentReason.title}
               </h4>

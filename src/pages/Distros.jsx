@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { apiRequest } from "../api";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaSeedling, FaCog, FaRocket, FaGamepad, FaShieldAlt } from "react-icons/fa";
 
 export default function Distros({ onLaunchSession }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -155,12 +155,12 @@ export default function Distros({ onLaunchSession }) {
   };
 
   const categories = [
-    { id: "all", label: "All Distributions" },
-    { id: "beginner", label: "Beginner", emoji: "🌱" },
-    { id: "intermediate", label: "Intermediate", emoji: "⚙️" },
-    { id: "advanced", label: "Advanced", emoji: "🚀" },
-    { id: "gaming", label: "Gaming Optimized", emoji: "🎮" },
-    { id: "security", label: "Penetration Testing", emoji: "🔐" }
+    { id: "all", label: "All Distributions", icon: null },
+    { id: "beginner", label: "Beginner", icon: <FaSeedling size={14} /> },
+    { id: "intermediate", label: "Intermediate", icon: <FaCog size={14} /> },
+    { id: "advanced", label: "Advanced", icon: <FaRocket size={14} /> },
+    { id: "gaming", label: "Gaming Optimized", icon: <FaGamepad size={14} /> },
+    { id: "security", label: "Penetration Testing", icon: <FaShieldAlt size={14} /> }
   ];
 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -207,10 +207,13 @@ export default function Distros({ onLaunchSession }) {
                 style={{ 
                   fontSize: isMobile ? 12 : 14, 
                   padding: isMobile ? '6px 10px' : '6px 12px',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
                 }}
               >
-                {cat.emoji && <span style={{ marginRight: 4 }}>{cat.emoji}</span>}
+                {cat.icon && <span>{cat.icon}</span>}
                 {cat.label}
               </button>
             ))}
@@ -229,7 +232,7 @@ export default function Distros({ onLaunchSession }) {
 
             <div style={{ 
               display: 'grid', 
-              gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
               gap: 16,
               padding: '4px 4px 16px 4px'
             }}>
